@@ -1,2 +1,3683 @@
-# resqroute-ai
-AI-powered emergency response, resource allocation and intelligent routing platform.
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ResQRoute AI — Emergency Intelligence Command</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN SYSTEM — THEME-AWARE
+   ============================================================ */
+:root{
+  --red:#E53935;
+  --red-dark:#B71C1C;
+  --red-mid:#C62828;
+  --red-soft:#FFEBEE;
+  --red-glow:rgba(229,57,53,.25);
+
+  --white:#FFFFFF;
+  --bg:#F8F9FA;
+  --bg-2:#F1F3F5;
+  --bg-3:#FCFCFD;
+  --text:#111827;
+  --text-2:#374151;
+  --muted:#6B7280;
+  --muted-2:#9CA3AF;
+
+  --success:#16A34A;
+  --success-soft:#ECFDF5;
+  --warning:#F59E0B;
+  --warning-soft:#FFFBEB;
+  --info:#2563EB;
+  --info-soft:#EFF6FF;
+
+  --border:#E5E7EB;
+  --border-2:#EEF0F3;
+
+  --shadow-xs:0 1px 2px rgba(17,24,39,.04);
+  --shadow-sm:0 2px 8px rgba(17,24,39,.05);
+  --shadow:0 6px 24px rgba(17,24,39,.07);
+  --shadow-lg:0 18px 50px rgba(17,24,39,.12);
+  --shadow-red:0 10px 30px rgba(229,57,53,.28);
+
+  --radius-sm:10px;
+  --radius:16px;
+  --radius-lg:22px;
+  --sidebar:264px;
+
+  --transition:.22s cubic-bezier(.2,.7,.3,1);
+}
+
+[data-theme="dark"]{
+  --white:#161A20;
+  --bg:#0E1116;
+  --bg-2:#1A1F26;
+  --bg-3:#12161B;
+  --text:#F3F4F6;
+  --text-2:#D1D5DB;
+  --muted:#9CA3AF;
+  --muted-2:#6B7280;
+  --border:#252B33;
+  --border-2:#1F242B;
+  --red-soft:#2A1416;
+  --success-soft:#0D2818;
+  --warning-soft:#2A1F0D;
+  --info-soft:#0D1A2E;
+  --shadow-xs:0 1px 2px rgba(0,0,0,.3);
+  --shadow-sm:0 2px 8px rgba(0,0,0,.35);
+  --shadow:0 6px 24px rgba(0,0,0,.4);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.5);
+}
+[data-theme="dark"] .land-nav{background:rgba(14,17,22,.85)}
+[data-theme="dark"] .topbar{background:rgba(14,17,22,.85)}
+[data-theme="dark"] .sidebar,[data-theme="dark"] .brand,[data-theme="dark"] .sidebar-foot{background:var(--white)}
+[data-theme="dark"] .brand{border-bottom-color:var(--border)}
+[data-theme="dark"] .sidebar-foot{border-top-color:var(--border)}
+[data-theme="dark"] .preview-bar{background:#12161B}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+  transition:background .35s ease,color .35s ease;
+}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#D7DBE0;border-radius:99px;border:2px solid var(--bg)}
+[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#2D333B;border-color:var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#BFC5CC}
+
+/* ============================================================
+   SHARED ATOMS
+   ============================================================ */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:99px;
+  font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+}
+.pill-red{background:var(--red-soft);color:var(--red-dark)}
+[data-theme="dark"] .pill-red{color:#FF8A80}
+.pill-green{background:var(--success-soft);color:#15803D}
+[data-theme="dark"] .pill-green{color:#4ADE80}
+.pill-amber{background:var(--warning-soft);color:#B45309}
+[data-theme="dark"] .pill-amber{color:#FBBF24}
+.pill-blue{background:var(--info-soft);color:#1D4ED8}
+[data-theme="dark"] .pill-blue{color:#60A5FA}
+.pill-gray{background:var(--bg-2);color:var(--muted)}
+
+.dot{width:7px;height:7px;border-radius:50%;flex:none}
+.dot-red{background:var(--red)}
+.dot-green{background:var(--success)}
+
+.live-dot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--success);flex:none}
+.live-dot::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:2px solid var(--success);opacity:.6;
+  animation:pulseRing 1.8s ease-out infinite;
+}
+@keyframes pulseRing{
+  0%{transform:scale(.6);opacity:.8}
+  100%{transform:scale(1.6);opacity:0}
+}
+
+.card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-xs);
+}
+
+.section-title{
+  font-size:13px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:9px;margin-bottom:16px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* RIPPLE */
+.ripple{position:relative;overflow:hidden}
+.ripple .rp{
+  position:absolute;border-radius:50%;transform:scale(0);
+  background:rgba(255,255,255,.5);pointer-events:none;
+  animation:rippleOut .65s ease-out;
+}
+.ripple.dark .rp{background:rgba(229,57,53,.25)}
+@keyframes rippleOut{to{transform:scale(2.6);opacity:0}}
+
+/* ============================================================
+   BOOT SCREEN
+   ============================================================ */
+#bootScreen{
+  position:fixed;inset:0;z-index:1000;
+  background:linear-gradient(140deg,#FFFFFF,#FFF5F5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .55s ease,visibility .55s ease;
+}
+[data-theme="dark"] #bootScreen{background:linear-gradient(140deg,#0E1116,#1A0F11)}
+#bootScreen.hide{opacity:0;visibility:hidden}
+.boot-logo{
+  width:90px;height:90px;border-radius:26px;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  display:grid;place-items:center;margin-bottom:30px;
+  box-shadow:0 20px 50px rgba(229,57,53,.4);
+  animation:bootLogo 1s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes bootLogo{
+  0%{transform:scale(.4) rotate(-20deg);opacity:0}
+  60%{transform:scale(1.08) rotate(3deg)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+.boot-logo svg{width:48px;height:48px}
+.boot-title{
+  font-size:30px;font-weight:900;letter-spacing:-.03em;
+  margin-bottom:8px;
+  animation:fadeInUp .7s .25s both;
+}
+.boot-title span{color:var(--red)}
+.boot-sub{
+  font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:44px;
+  animation:fadeInUp .7s .35s both;
+}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.boot-progress{
+  width:280px;height:4px;background:var(--border-2);border-radius:99px;
+  overflow:hidden;margin-bottom:18px;
+}
+.boot-progress i{
+  display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,var(--red),var(--red-dark));
+  border-radius:99px;transition:width .35s ease;
+}
+.boot-status{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--muted);letter-spacing:.04em;min-height:16px;
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+#confetti{
+  position:fixed;inset:0;pointer-events:none;z-index:950;
+}
+.cf{
+  position:absolute;width:9px;height:15px;
+  animation:cfFall linear forwards;
+}
+@keyframes cfFall{
+  0%{transform:translateY(-40px) rotate(0);opacity:1}
+  100%{transform:translateY(105vh) rotate(720deg);opacity:.2}
+}
+
+/* ============================================================
+   LANDING
+   ============================================================ */
+.landing{
+  position:fixed;inset:0;z-index:200;background:var(--white);
+  overflow-y:auto;transition:opacity .45s ease,visibility .45s ease;
+}
+.landing.hide{opacity:0;visibility:hidden;pointer-events:none}
+
+.land-nav{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 6vw;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border-2);
+  transition:background .3s;
+}
+.land-brand{display:flex;align-items:center;gap:11px}
+.land-brand .mark{
+  width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  display:grid;place-items:center;box-shadow:var(--shadow-red);
+  transition:transform .3s;
+}
+.land-brand:hover .mark{transform:rotate(-8deg) scale(1.06)}
+.land-brand .mark svg{width:21px;height:21px}
+.land-brand .name{font-size:17px;font-weight:900;letter-spacing:-.02em}
+.land-brand .name span{color:var(--red)}
+.land-brand .sub{font-size:10px;font-weight:600;color:var(--muted-2);letter-spacing:.12em;text-transform:uppercase}
+
+.land-links{display:flex;align-items:center;gap:30px}
+.land-links a{font-size:14px;font-weight:600;color:var(--muted);transition:color .18s;position:relative}
+.land-links a::after{
+  content:'';position:absolute;left:0;right:0;bottom:-5px;height:2px;
+  background:var(--red);transform:scaleX(0);transform-origin:left;
+  transition:transform .28s cubic-bezier(.2,.7,.3,1);
+}
+.land-links a:hover{color:var(--red)}
+.land-links a:hover::after{transform:scaleX(1)}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:12px 22px;border-radius:12px;
+  font-size:14px;font-weight:700;
+  transition:transform .18s, box-shadow .18s, background .18s, color .18s;
+  white-space:nowrap;position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(.97)}
+.btn-red{
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  color:#fff;box-shadow:var(--shadow-red);
+}
+.btn-red:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(229,57,53,.36)}
+.btn-ghost{background:var(--white);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--red);color:var(--red);background:var(--red-soft)}
+.btn-dark{background:var(--text);color:var(--white)}
+.btn-sm{padding:9px 16px;font-size:13px;border-radius:10px}
+
+/* HERO */
+.hero{
+  position:relative;
+  padding:86px 6vw 70px;
+  display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center;
+  max-width:1400px;margin:0 auto;
+}
+.hero::before{
+  content:'';position:absolute;top:-160px;right:-180px;width:640px;height:640px;
+  background:radial-gradient(circle, rgba(229,57,53,.09), transparent 68%);
+  border-radius:50%;pointer-events:none;
+  animation:floatBlob 14s ease-in-out infinite;
+}
+.hero::after{
+  content:'';position:absolute;bottom:-220px;left:-160px;width:560px;height:560px;
+  background:radial-gradient(circle, rgba(229,57,53,.06), transparent 70%);
+  border-radius:50%;pointer-events:none;
+  animation:floatBlob 18s ease-in-out infinite reverse;
+}
+@keyframes floatBlob{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(30px,-30px) scale(1.08)}
+}
+.hero-left{position:relative;z-index:1}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:7px 15px;border-radius:99px;
+  background:var(--red-soft);border:1px solid #FFCDD2;
+  font-size:12px;font-weight:700;color:var(--red-dark);
+  letter-spacing:.04em;margin-bottom:26px;
+  animation:fadeInUp .7s both;
+}
+.hero h1{
+  font-size:clamp(38px,4.6vw,64px);
+  font-weight:900;line-height:1.04;letter-spacing:-.035em;
+  margin-bottom:24px;
+  animation:fadeInUp .7s .1s both;
+}
+.hero h1 em{font-style:normal;color:var(--red);position:relative;white-space:nowrap}
+.hero h1 em::after{
+  content:'';position:absolute;left:0;right:0;bottom:4px;height:10px;
+  background:rgba(229,57,53,.14);border-radius:4px;z-index:-1;
+}
+.hero p.lead{
+  font-size:17px;line-height:1.72;color:var(--muted);max-width:540px;margin-bottom:34px;
+  animation:fadeInUp .7s .2s both;
+}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:44px;animation:fadeInUp .7s .3s both}
+.hero-stats{display:flex;gap:44px;flex-wrap:wrap;animation:fadeInUp .7s .4s both}
+.hero-stat .n{font-size:29px;font-weight:900;letter-spacing:-.03em;color:var(--text)}
+.hero-stat .n i{font-style:normal;color:var(--red)}
+.hero-stat .l{font-size:12px;color:var(--muted);font-weight:600;margin-top:3px}
+
+/* HERO PREVIEW */
+.hero-right{position:relative;z-index:1}
+.preview{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+  overflow:hidden;
+  animation:floaty 7s ease-in-out infinite;
+}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.preview-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:13px 18px;border-bottom:1px solid var(--border-2);background:var(--bg-3);
+}
+.preview-bar .d{width:10px;height:10px;border-radius:50%}
+.preview-bar .title{margin-left:8px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em}
+.preview-body{padding:20px}
+.preview-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px}
+.pk{background:var(--bg);border:1px solid var(--border-2);border-radius:12px;padding:13px}
+.pk .v{font-size:21px;font-weight:900;letter-spacing:-.03em}
+.pk .v.r{color:var(--red)}
+.pk .k{font-size:10px;font-weight:700;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+.map-mount{
+  position:relative;width:100%;border-radius:14px;overflow:hidden;
+  border:1px solid var(--border-2);background:var(--bg-3);
+}
+.map-mount.tall{aspect-ratio:16/9}
+.map-mount.hero-map{aspect-ratio:16/10}
+.mapsvg{display:block;width:100%;height:100%}
+
+.map-legend{
+  position:absolute;left:14px;bottom:14px;
+  display:flex;gap:14px;flex-wrap:wrap;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--border);border-radius:11px;
+  padding:9px 14px;box-shadow:var(--shadow-sm);
+}
+[data-theme="dark"] .map-legend{background:rgba(22,26,32,.94)}
+.map-legend span{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--muted)}
+.map-legend i{width:9px;height:9px;border-radius:3px;display:block}
+
+.map-scan{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(229,57,53,.09),transparent);
+  height:38%;
+  animation:scan 4.5s linear infinite;
+}
+@keyframes scan{0%{transform:translateY(-40%)}100%{transform:translateY(300%)}}
+
+/* RADAR SWEEP */
+.radar{
+  position:absolute;top:14px;right:14px;width:56px;height:56px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(229,57,53,.12),transparent 70%);
+  border:1.5px solid rgba(229,57,53,.3);
+  overflow:hidden;
+}
+.radar::before{
+  content:'';position:absolute;inset:0;
+  background:conic-gradient(from 0deg, transparent 0deg, rgba(229,57,53,.55) 20deg, transparent 60deg);
+  animation:radarSpin 2.4s linear infinite;
+}
+@keyframes radarSpin{to{transform:rotate(360deg)}}
+.radar::after{
+  content:'';position:absolute;inset:38%;border-radius:50%;
+  background:var(--red);box-shadow:0 0 8px var(--red);
+}
+
+/* FEATURES */
+.features{max-width:1400px;margin:0 auto;padding:40px 6vw 90px}
+.features-head{text-align:center;max-width:660px;margin:0 auto 54px}
+.features-head h2{
+  font-size:clamp(28px,3.2vw,42px);font-weight:900;
+  letter-spacing:-.03em;line-height:1.14;margin-bottom:16px;
+}
+.features-head h2 span{color:var(--red)}
+.features-head p{font-size:16px;color:var(--muted);line-height:1.7}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.feature{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px 26px;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s, border-color .3s;
+  position:relative;overflow:hidden;
+  opacity:0;transform:translateY(30px);
+}
+.feature.reveal{opacity:1;transform:none;transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1),box-shadow .3s,border-color .3s}
+.feature::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--red),var(--red-dark));
+  transform:scaleX(0);transform-origin:left;transition:transform .4s;
+}
+.feature:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:#FFCDD2}
+.feature:hover::before{transform:scaleX(1)}
+.feature .ico{
+  width:46px;height:46px;border-radius:13px;
+  background:var(--red-soft);display:grid;place-items:center;margin-bottom:18px;
+  font-size:21px;transition:transform .3s;
+}
+.feature:hover .ico{transform:scale(1.1) rotate(-6deg)}
+.feature h3{font-size:16px;font-weight:800;margin-bottom:9px;letter-spacing:-.01em}
+.feature p{font-size:14px;line-height:1.68;color:var(--muted)}
+
+/* STORY STRIP */
+.story{
+  background:var(--text);color:var(--white);padding:70px 6vw;
+  position:relative;overflow:hidden;
+}
+.story::before{
+  content:'';position:absolute;top:-50%;right:-10%;width:520px;height:520px;
+  background:radial-gradient(circle,rgba(229,57,53,.28),transparent 68%);border-radius:50%;
+  animation:floatBlob 12s ease-in-out infinite;
+}
+.story-inner{max-width:1400px;margin:0 auto;position:relative;z-index:1}
+.story h2{
+  font-size:clamp(24px,2.6vw,34px);font-weight:900;letter-spacing:-.03em;
+  text-align:center;margin-bottom:12px;
+}
+.story .sub{text-align:center;color:#9CA3AF;font-size:15px;margin-bottom:48px}
+.flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.flow-step{
+  display:flex;flex-direction:column;align-items:center;gap:11px;
+  padding:20px 22px;border-radius:14px;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);
+  min-width:118px;transition:background .25s, transform .25s;
+}
+.flow-step:hover{background:rgba(229,57,53,.16);transform:translateY(-4px)}
+.flow-step .n{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  display:grid;place-items:center;font-weight:800;font-size:14px;
+  box-shadow:0 6px 18px rgba(229,57,53,.4);
+}
+.flow-step .t{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#E5E7EB}
+.flow-arrow{color:#4B5563;font-size:17px;font-weight:700}
+
+/* CTA */
+.cta-band{max-width:1400px;margin:0 auto;padding:80px 6vw}
+.cta-box{
+  background:linear-gradient(135deg,var(--red),var(--red-dark));
+  border-radius:26px;padding:60px 48px;text-align:center;color:#fff;
+  box-shadow:0 26px 60px rgba(229,57,53,.3);position:relative;overflow:hidden;
+}
+.cta-box::before{
+  content:'';position:absolute;top:-60%;left:-10%;width:460px;height:460px;
+  background:rgba(255,255,255,.09);border-radius:50%;
+  animation:floatBlob 10s ease-in-out infinite;
+}
+.cta-box::after{
+  content:'';position:absolute;bottom:-60%;right:-10%;width:420px;height:420px;
+  background:rgba(255,255,255,.07);border-radius:50%;
+  animation:floatBlob 12s ease-in-out infinite reverse;
+}
+.cta-box h2{font-size:clamp(26px,3vw,38px);font-weight:900;letter-spacing:-.03em;margin-bottom:14px;position:relative}
+.cta-box p{font-size:16px;opacity:.92;margin-bottom:32px;position:relative;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7}
+.cta-box .btn{position:relative;background:#fff;color:var(--red-dark);box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.cta-box .btn:hover{transform:translateY(-3px)}
+
+.land-foot{
+  border-top:1px solid var(--border);padding:30px 6vw;
+  display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
+  font-size:13px;color:var(--muted);
+}
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+.app{display:flex;min-height:100vh;opacity:0;transition:opacity .45s ease}
+.app.show{opacity:1}
+
+.sidebar{
+  width:var(--sidebar);flex:none;
+  background:var(--white);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;bottom:0;left:0;z-index:60;
+  overflow-y:auto;
+  transition:background .35s,border-color .35s;
+}
+.sidebar::-webkit-scrollbar{width:5px}
+
+.brand{
+  display:flex;align-items:center;gap:11px;
+  padding:20px 20px;border-bottom:1px solid var(--border-2);
+  position:sticky;top:0;background:var(--white);z-index:2;
+  transition:background .35s;
+}
+.brand .mark{
+  width:38px;height:38px;border-radius:11px;flex:none;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  display:grid;place-items:center;box-shadow:var(--shadow-red);
+  transition:transform .3s;
+}
+.brand:hover .mark{transform:rotate(-6deg) scale(1.05)}
+.brand .mark svg{width:21px;height:21px}
+.brand-name{font-size:15.5px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.brand-name span{color:var(--red)}
+.brand-sub{font-size:9.5px;font-weight:700;color:var(--muted-2);letter-spacing:.11em;text-transform:uppercase;margin-top:2px}
+
+.nav-group{padding:16px 12px 4px}
+.nav-label{
+  font-size:9.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted-2);padding:0 10px 8px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 11px;border-radius:10px;
+  font-size:13.5px;font-weight:600;color:var(--muted);
+  transition:background .16s, color .16s, transform .16s;
+  margin-bottom:2px;position:relative;width:100%;text-align:left;
+}
+.nav-item svg{width:17px;height:17px;flex:none;stroke-width:1.9;transition:transform .22s}
+.nav-item:hover{background:var(--bg);color:var(--text);transform:translateX(2px)}
+.nav-item:hover svg{transform:scale(1.1)}
+.nav-item.active{background:var(--red-soft);color:var(--red-dark);font-weight:700}
+.nav-item.active::before{
+  content:'';position:absolute;left:-12px;top:50%;transform:translateY(-50%);
+  width:3px;height:19px;border-radius:0 3px 3px 0;background:var(--red);
+}
+.nav-item .badge{
+  margin-left:auto;background:var(--red);color:#fff;
+  font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;
+  animation:badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.12)}
+}
+
+.sidebar-foot{
+  margin-top:auto;padding:16px;border-top:1px solid var(--border-2);
+  position:sticky;bottom:0;background:var(--white);
+  transition:background .35s;
+}
+.system-card{
+  background:var(--bg);border:1px solid var(--border-2);
+  border-radius:12px;padding:13px;
+}
+.system-card .row{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;
+}
+.system-card .row:last-child{margin-bottom:0}
+.system-card .ok{color:var(--success);font-weight:800;display:flex;align-items:center;gap:5px}
+.system-card .ok::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success)}
+
+/* MAIN */
+.main{flex:1;margin-left:var(--sidebar);min-width:0;display:flex;flex-direction:column}
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:14px;
+  padding:12px 28px;background:rgba(255,255,255,.88);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+  transition:background .35s,border-color .35s;
+}
+.topbar-title{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.topbar-crumb{font-size:12px;color:var(--muted-2);font-weight:600;margin-top:1px}
+
+.clock-widget{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 14px;border-radius:11px;
+  background:var(--bg);border:1px solid var(--border-2);
+  font-size:12px;font-weight:700;
+}
+.clock-widget .t{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text)}
+.clock-widget .d{color:var(--muted)}
+.clock-widget .w{
+  display:flex;align-items:center;gap:4px;color:var(--muted);
+  padding-left:10px;border-left:1px solid var(--border);
+}
+
+.topbar-search{
+  display:flex;align-items:center;gap:9px;
+  background:var(--bg);border:1px solid var(--border-2);
+  border-radius:11px;padding:9px 14px;width:240px;
+  transition:border-color .2s, box-shadow .2s;
+  margin-left:auto;cursor:pointer;
+}
+.topbar-search:hover{border-color:var(--border)}
+.topbar-search svg{width:15px;height:15px;color:var(--muted-2);flex:none}
+.topbar-search input{border:none;background:none;outline:none;font-size:13px;width:100%;cursor:pointer}
+.topbar-search kbd{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:2px 6px;border-radius:5px;background:var(--white);
+  border:1px solid var(--border);color:var(--muted);flex:none;
+}
+
+.icon-btn{
+  width:38px;height:38px;border-radius:11px;
+  display:grid;place-items:center;position:relative;
+  border:1px solid var(--border);background:var(--white);color:var(--muted);
+  transition:all .18s;
+}
+.icon-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-soft);transform:translateY(-1px)}
+.icon-btn svg{width:17px;height:17px;stroke-width:1.9}
+.icon-btn .n{
+  position:absolute;top:-5px;right:-5px;
+  background:var(--red);color:#fff;font-size:9.5px;font-weight:800;
+  min-width:17px;height:17px;border-radius:99px;
+  display:grid;place-items:center;border:2px solid var(--white);
+}
+.icon-btn.bell.shake svg{animation:bellShake .6s ease-in-out}
+@keyframes bellShake{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(-14deg)}
+  50%{transform:rotate(14deg)}
+  75%{transform:rotate(-8deg)}
+}
+
+.profile{display:flex;align-items:center;gap:10px;padding-left:6px;cursor:pointer;position:relative}
+.avatar{
+  width:38px;height:38px;border-radius:11px;flex:none;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  color:#fff;display:grid;place-items:center;
+  font-weight:800;font-size:13.5px;position:relative;
+  box-shadow:0 4px 12px rgba(229,57,53,.28);
+}
+.avatar::after{
+  content:'';position:absolute;bottom:-1px;right:-1px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--success);border:2px solid var(--white);
+}
+.profile .who{font-size:13px;font-weight:700;line-height:1.2}
+.profile .role{font-size:10.5px;color:var(--muted-2);font-weight:600}
+
+/* LIVE TICKER */
+.ticker{
+  display:flex;align-items:center;gap:14px;
+  padding:9px 28px;
+  background:linear-gradient(90deg,#1A1F26,#0E1116);
+  color:#E5E7EB;font-size:12px;font-weight:600;
+  overflow:hidden;border-bottom:1px solid var(--border);
+  position:relative;
+}
+.ticker .label{
+  background:var(--red);color:#fff;padding:3px 9px;border-radius:6px;
+  font-size:10px;font-weight:800;letter-spacing:.06em;flex:none;
+  display:flex;align-items:center;gap:5px;
+  animation:badgePulse 2s ease-in-out infinite;
+}
+.ticker-track{
+  flex:1;overflow:hidden;position:relative;height:18px;
+}
+.ticker-inner{
+  position:absolute;white-space:nowrap;
+  animation:tickerScroll 32s linear infinite;
+  display:flex;gap:40px;
+}
+.ticker-inner span{opacity:.92}
+.ticker-inner b{color:#F87171;font-weight:800}
+@keyframes tickerScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+
+.content{padding:24px 28px 56px;flex:1}
+
+.page{display:none;animation:fadeUp .4s cubic-bezier(.2,.7,.3,1)}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.page-head{margin-bottom:24px}
+.page-head h1{font-size:26px;font-weight:900;letter-spacing:-.03em;margin-bottom:6px}
+.page-head p{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:22px}
+.kpi{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;position:relative;overflow:hidden;
+  transition:transform .25s, box-shadow .25s, border-color .25s;
+  cursor:default;
+}
+.kpi:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#FFCDD2}
+.kpi::after{
+  content:'';position:absolute;right:-24px;top:-24px;width:88px;height:88px;
+  border-radius:50%;background:var(--red-soft);opacity:.65;
+  transition:transform .4s;
+}
+.kpi:hover::after{transform:scale(1.35)}
+.kpi .ico{
+  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  background:var(--red-soft);color:var(--red);margin-bottom:14px;
+  position:relative;z-index:1;font-size:17px;
+}
+.kpi .val{font-size:30px;font-weight:900;letter-spacing:-.04em;line-height:1;position:relative;z-index:1}
+.kpi .val small{font-size:14px;font-weight:700;color:var(--muted);margin-left:3px}
+.kpi .lbl{
+  font-size:11px;font-weight:700;color:var(--muted-2);
+  text-transform:uppercase;letter-spacing:.07em;margin-top:8px;
+  position:relative;z-index:1;
+}
+.kpi .trend{
+  font-size:11px;font-weight:700;margin-top:10px;position:relative;z-index:1;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.trend.up{color:var(--success)}
+.trend.down{color:var(--red)}
+
+/* STATUS BANNER */
+.status-banner{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(100deg,#F0FDF4,#ECFDF5);
+  border:1px solid #BBF7D0;border-radius:var(--radius);
+  padding:16px 22px;margin-bottom:22px;position:relative;overflow:hidden;
+}
+[data-theme="dark"] .status-banner{background:linear-gradient(100deg,#0D2818,#0F2E1C);border-color:#166534}
+.status-banner::before{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+  animation:shimmer 4s infinite;
+}
+@keyframes shimmer{to{left:100%}}
+.status-banner .ico{
+  width:40px;height:40px;border-radius:12px;background:#DCFCE7;
+  display:grid;place-items:center;font-size:19px;flex:none;
+  position:relative;z-index:1;
+}
+[data-theme="dark"] .status-banner .ico{background:#134E2A}
+.status-banner .txt strong{display:block;font-size:14px;font-weight:800;color:#15803D}
+[data-theme="dark"] .status-banner .txt strong{color:#4ADE80}
+.status-banner .txt span{font-size:12.5px;color:#166534;opacity:.85}
+[data-theme="dark"] .status-banner .txt span{color:#86EFAC}
+.status-banner .right{margin-left:auto;display:flex;gap:22px}
+.status-banner .right .m{text-align:right}
+.status-banner .right .m .v{font-size:16px;font-weight:900;color:#15803D}
+[data-theme="dark"] .status-banner .right .m .v{color:#4ADE80}
+.status-banner .right .m .k{font-size:10px;font-weight:700;color:#166534;opacity:.75;text-transform:uppercase;letter-spacing:.06em}
+
+/* LAYOUT GRIDS */
+.grid-2{display:grid;grid-template-columns:1.65fr 1fr;gap:18px;margin-bottom:18px}
+.grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
+
+.panel{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow-xs);
+  transition:background .35s,border-color .35s;
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 20px;border-bottom:1px solid var(--border-2);
+}
+.panel-head h3{font-size:14px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.panel-head h3 svg{width:16px;height:16px;color:var(--red);stroke-width:2}
+.panel-body{padding:20px}
+.panel-body.tight{padding:0}
+
+/* PRIORITY QUEUE */
+.queue-item{
+  display:flex;align-items:center;gap:13px;
+  padding:14px 20px;border-bottom:1px solid var(--border-2);
+  transition:background .18s;cursor:pointer;
+}
+.queue-item:last-child{border-bottom:none}
+.queue-item:hover{background:var(--bg);transform:translateX(3px)}
+.queue-item .bar{width:3px;height:38px;border-radius:99px;flex:none}
+.bar-critical{background:var(--red);box-shadow:0 0 10px rgba(229,57,53,.5)}
+.bar-high{background:#FB8C00}
+.bar-medium{background:var(--warning)}
+.bar-low{background:var(--success)}
+.queue-item .info{flex:1;min-width:0}
+.queue-item .info .t{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.queue-item .info .s{font-size:11.5px;color:var(--muted);display:flex;gap:9px;flex-wrap:wrap}
+.queue-item .eta{text-align:right;flex:none}
+.queue-item .eta .v{font-size:16px;font-weight:900;letter-spacing:-.02em}
+.queue-item .eta .k{font-size:9.5px;font-weight:700;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em}
+
+/* INSIGHTS */
+.insight{
+  display:flex;gap:12px;padding:13px 0;border-bottom:1px dashed var(--border-2);
+}
+.insight:last-child{border-bottom:none;padding-bottom:0}
+.insight .ic{
+  width:30px;height:30px;border-radius:9px;flex:none;
+  display:grid;place-items:center;font-size:14px;
+  background:var(--red-soft);
+}
+.insight p{font-size:13px;line-height:1.6;color:var(--text-2)}
+.insight p strong{font-weight:800;color:var(--text)}
+
+/* SOS */
+.sos-wrap{max-width:760px;margin:0 auto}
+.sos-card{
+  background:var(--white);border:1px solid var(--border);border-radius:24px;
+  padding:44px 36px;text-align:center;box-shadow:var(--shadow);
+  position:relative;overflow:hidden;margin-bottom:22px;
+}
+.sos-card::before{
+  content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+  width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(229,57,53,.07),transparent 68%);
+}
+.sos-card h2{
+  font-size:22px;font-weight:900;letter-spacing:-.02em;margin-bottom:8px;position:relative;
+}
+.sos-card p.hint{font-size:13.5px;color:var(--muted);margin-bottom:32px;position:relative}
+
+.sos-btn{
+  position:relative;width:216px;height:216px;border-radius:50%;
+  margin:0 auto 26px;display:block;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  box-shadow:0 0 0 0 rgba(229,57,53,.5), var(--shadow-red);
+  overflow:hidden;
+  animation:sosPulse 2.6s ease-out infinite;
+  transition:transform .15s;
+}
+@keyframes sosPulse{
+  0%{box-shadow:0 0 0 0 rgba(229,57,53,.5), var(--shadow-red)}
+  70%{box-shadow:0 0 0 30px rgba(229,57,53,0), var(--shadow-red)}
+  100%{box-shadow:0 0 0 0 rgba(229,57,53,0), var(--shadow-red)}
+}
+.sos-btn:active{transform:scale(.96)}
+.sos-btn .fill{
+  position:absolute;left:0;right:0;bottom:0;height:0%;
+  background:rgba(255,255,255,.28);transition:height .08s linear;
+}
+.sos-btn .inner{
+  position:relative;z-index:1;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  color:#fff;
+}
+.sos-btn .inner .big{font-size:23px;font-weight:900;letter-spacing:.02em}
+.sos-btn .inner .small{font-size:11.5px;font-weight:600;opacity:.85;letter-spacing:.05em}
+.sos-btn .inner svg{width:34px;height:34px;margin-bottom:6px}
+
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:22px;position:relative}
+.type-chip{
+  padding:16px 10px;border-radius:14px;
+  border:1.5px solid var(--border);background:var(--white);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:12.5px;font-weight:700;color:var(--muted);
+  transition:all .18s;
+}
+.type-chip .e{font-size:21px;transition:transform .25s}
+.type-chip:hover{border-color:#FFCDD2;background:var(--red-soft);color:var(--red-dark);transform:translateY(-2px)}
+.type-chip:hover .e{transform:scale(1.15)}
+.type-chip.active{
+  border-color:var(--red);background:var(--red-soft);color:var(--red-dark);
+  box-shadow:0 0 0 3px rgba(229,57,53,.09);
+}
+
+.field{margin-bottom:16px;text-align:left;position:relative}
+.field label{
+  display:block;font-size:11.5px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;
+}
+.field input,.field textarea,.field select{
+  width:100%;padding:13px 15px;border-radius:12px;
+  border:1.5px solid var(--border);background:var(--white);
+  font-size:14px;outline:none;
+  transition:border-color .18s, box-shadow .18s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft);
+}
+.field textarea{resize:vertical;min-height:88px;line-height:1.6}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.mini-actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:22px}
+.mini-btn{
+  padding:14px;border-radius:13px;border:1.5px dashed var(--border);
+  background:var(--white);display:flex;align-items:center;justify-content:center;gap:9px;
+  font-size:13px;font-weight:700;color:var(--muted);transition:all .18s;
+}
+.mini-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-soft);border-style:solid}
+.mini-btn svg{width:16px;height:16px;stroke-width:2}
+.mini-btn.recording{border-color:var(--red);color:var(--red);background:var(--red-soft);border-style:solid}
+.mini-btn.recording svg{animation:micPulse 1s infinite}
+@keyframes micPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+
+/* AI ANALYSIS */
+.gauge-wrap{display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+.gauge{
+  width:172px;height:172px;border-radius:50%;flex:none;
+  display:grid;place-items:center;position:relative;
+  background:conic-gradient(var(--red) 0turn 0turn, var(--border-2) 0turn 1turn);
+  transition:background .4s ease;
+}
+.gauge::after{content:'';position:absolute;inset:15px;border-radius:50%;background:var(--white)}
+.gauge-in{position:relative;z-index:1;text-align:center}
+.gauge-in .v{font-size:38px;font-weight:900;letter-spacing:-.05em;line-height:1;color:var(--red-dark)}
+[data-theme="dark"] .gauge-in .v{color:#FF8A80}
+.gauge-in .k{font-size:10px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em;margin-top:5px}
+.gauge-meta{flex:1;min-width:220px}
+.gauge-meta .row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 0;border-bottom:1px dashed var(--border-2);font-size:13.5px;
+}
+.gauge-meta .row:last-child{border-bottom:none}
+.gauge-meta .row .k{color:var(--muted);font-weight:600}
+.gauge-meta .row .v{font-weight:800}
+
+.meter{height:8px;border-radius:99px;background:var(--bg-2);overflow:hidden;margin-top:9px}
+.meter i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--red-dark));transition:width 1.1s cubic-bezier(.2,.7,.3,1);width:0}
+
+.chip-list{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  padding:8px 14px;border-radius:99px;font-size:12.5px;font-weight:700;
+  background:var(--red-soft);color:var(--red-dark);border:1px solid #FFCDD2;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:transform .2s;
+}
+.chip:hover{transform:translateY(-2px)}
+.chip.neutral{background:var(--bg-2);color:var(--muted);border-color:var(--border)}
+
+.response-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.response-card{
+  padding:16px;border-radius:14px;border:1.5px solid var(--border);
+  text-align:center;transition:all .2s;
+}
+.response-card:hover{border-color:var(--red);background:var(--red-soft);transform:translateY(-3px)}
+.response-card .e{font-size:24px;margin-bottom:8px;transition:transform .25s}
+.response-card:hover .e{transform:scale(1.15)}
+.response-card .t{font-size:12.5px;font-weight:800}
+.response-card .s{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ROUTES */
+.route-card{
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:20px;margin-bottom:14px;background:var(--white);
+  transition:all .25s;cursor:pointer;position:relative;overflow:hidden;
+}
+.route-card:hover{border-color:#FFCDD2;box-shadow:var(--shadow-sm);transform:translateY(-2px)}
+.route-card.best{border-color:var(--red);background:linear-gradient(180deg,var(--red-soft),var(--white))}
+.route-card.best::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red);
+  animation:routeMark 1.8s ease-in-out infinite;
+}
+@keyframes routeMark{0%,100%{opacity:1}50%{opacity:.4}}
+.route-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.route-top .name{font-size:16px;font-weight:900;letter-spacing:-.02em}
+.route-top .tag{margin-left:auto}
+.route-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.route-metrics .m .v{font-size:18px;font-weight:900;letter-spacing:-.03em}
+.route-metrics .m .k{font-size:10px;font-weight:700;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+.ai-reco{
+  background:var(--red-soft);border:1px solid #FFCDD2;border-radius:14px;
+  padding:18px;display:flex;gap:14px;align-items:flex-start;
+}
+.ai-reco .ic{
+  width:36px;height:36px;border-radius:11px;background:var(--red);color:#fff;
+  display:grid;place-items:center;flex:none;font-size:17px;
+  animation:sparkle 2.5s ease-in-out infinite;
+}
+@keyframes sparkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.08) rotate(6deg)}}
+.ai-reco .t{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--red-dark);margin-bottom:6px}
+[data-theme="dark"] .ai-reco .t{color:#FF8A80}
+.ai-reco p{font-size:13.5px;line-height:1.65;color:var(--text-2)}
+
+/* HOSPITALS */
+.hospital-card{
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:20px;background:var(--white);transition:all .25s;
+}
+.hospital-card:hover{border-color:#FFCDD2;box-shadow:var(--shadow-sm);transform:translateY(-3px)}
+.hospital-card.reco{border-color:var(--red);background:linear-gradient(180deg,var(--red-soft),var(--white))}
+.hosp-top{display:flex;align-items:flex-start;gap:13px;margin-bottom:16px}
+.hosp-top .ic{
+  width:44px;height:44px;border-radius:13px;background:var(--red-soft);
+  display:grid;place-items:center;font-size:20px;flex:none;
+}
+.hosp-top .n{font-size:15px;font-weight:800;letter-spacing:-.01em;margin-bottom:4px}
+.hosp-top .d{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.hosp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.hosp-stats .s{background:var(--bg);border-radius:11px;padding:11px 9px;text-align:center}
+.hosp-stats .s .v{font-size:17px;font-weight:900;letter-spacing:-.02em}
+.hosp-stats .s .k{font-size:9.5px;font-weight:700;color:var(--muted-2);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:30px}
+.timeline::before{
+  content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;
+  background:linear-gradient(180deg,var(--red),var(--border-2));border-radius:99px;
+}
+.tl-item{position:relative;padding-bottom:22px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{
+  content:'';position:absolute;left:-26px;top:4px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--white);border:2.5px solid var(--border);
+  transition:all .3s;
+}
+.tl-item.done::before{border-color:var(--red);background:var(--red)}
+.tl-item.now::before{border-color:var(--red);background:var(--red);box-shadow:0 0 0 4px var(--red-soft);animation:pulseRing 2s infinite}
+.tl-item .tm{font-size:11px;font-weight:800;color:var(--muted-2);letter-spacing:.05em;margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.tl-item .tx{font-size:13.5px;font-weight:600;color:var(--text)}
+.tl-item.now .tx{color:var(--red-dark);font-weight:800}
+[data-theme="dark"] .tl-item.now .tx{color:#FF8A80}
+
+/* COPILOT */
+.copilot-wrap{display:grid;grid-template-columns:1fr 300px;gap:18px}
+.chat{display:flex;flex-direction:column;height:calc(100vh - 260px);min-height:460px}
+.chat-body{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:11px;max-width:82%}
+.msg .av{
+  width:32px;height:32px;border-radius:10px;flex:none;
+  display:grid;place-items:center;font-size:14px;font-weight:800;
+}
+.msg.ai .av{background:linear-gradient(140deg,var(--red),var(--red-dark));color:#fff}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg.user .av{background:var(--bg-2);color:var(--muted)}
+.bubble{
+  padding:13px 16px;border-radius:14px;font-size:13.5px;line-height:1.68;
+  background:var(--bg);border:1px solid var(--border-2);color:var(--text-2);
+  animation:bubbleIn .35s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes bubbleIn{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+.msg.user .bubble{background:var(--text);color:var(--white);border-color:var(--text)}
+.bubble strong{font-weight:800;color:var(--text)}
+.msg.user .bubble strong{color:#fff}
+.bubble ul{margin:9px 0 0 17px;display:flex;flex-direction:column;gap:6px}
+.bubble li{font-size:13px;line-height:1.55}
+.bubble .hl{color:var(--red);font-weight:800}
+.typing{display:inline-flex;gap:4px}
+.typing i{
+  width:6px;height:6px;border-radius:50%;background:var(--muted);
+  animation:typing 1.2s infinite;
+}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+.chat-input{
+  display:flex;gap:11px;padding:16px 20px;border-top:1px solid var(--border-2);background:var(--white);
+}
+.chat-input input{
+  flex:1;padding:13px 16px;border-radius:12px;border:1.5px solid var(--border);
+  font-size:13.5px;outline:none;transition:border-color .18s, box-shadow .18s;background:var(--white);
+}
+.chat-input input:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
+.chat-input button{
+  width:46px;height:46px;border-radius:12px;flex:none;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));color:#fff;
+  display:grid;place-items:center;box-shadow:var(--shadow-red);
+  transition:transform .18s;
+}
+.chat-input button:hover{transform:scale(1.06)}
+.chat-input button svg{width:18px;height:18px}
+
+.suggest{display:flex;flex-direction:column;gap:9px}
+.suggest button{
+  text-align:left;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--border);background:var(--white);
+  font-size:12.5px;font-weight:600;color:var(--muted);
+  transition:all .18s;line-height:1.5;
+}
+.suggest button:hover{border-color:var(--red);color:var(--red-dark);background:var(--red-soft);transform:translateX(4px)}
+
+/* RISK */
+.zone-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px dashed var(--border-2)}
+.zone-row:last-child{border-bottom:none}
+.zone-row .z{width:74px;font-size:13px;font-weight:800;flex:none}
+.zone-row .track{flex:1;height:10px;border-radius:99px;background:var(--bg-2);overflow:hidden}
+.zone-row .track i{display:block;height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.2,.7,.3,1);width:0}
+.zone-row .p{width:46px;text-align:right;font-size:13px;font-weight:900;flex:none}
+
+.factor{
+  display:flex;align-items:center;gap:12px;padding:12px 0;
+  border-bottom:1px dashed var(--border-2);
+}
+.factor:last-child{border-bottom:none}
+.factor .e{
+  width:34px;height:34px;border-radius:10px;background:var(--bg);
+  display:grid;place-items:center;font-size:16px;flex:none;
+}
+.factor .n{flex:1;font-size:13.5px;font-weight:600}
+.factor .w{font-size:12px;font-weight:800;color:var(--red)}
+
+/* SIMULATION */
+.sim-steps{display:flex;flex-direction:column;gap:12px}
+.sim-step{
+  display:flex;align-items:center;gap:14px;
+  padding:15px 18px;border-radius:14px;
+  border:1.5px solid var(--border);background:var(--white);
+  opacity:.4;transition:all .45s cubic-bezier(.2,.7,.3,1);
+}
+.sim-step.on{
+  opacity:1;border-color:var(--red);background:var(--red-soft);
+  transform:translateX(6px);box-shadow:0 6px 18px rgba(229,57,53,.1);
+}
+.sim-step.done{opacity:1;border-color:#BBF7D0;background:var(--success-soft)}
+.sim-step .n{
+  width:32px;height:32px;border-radius:10px;flex:none;
+  background:var(--bg-2);color:var(--muted);
+  display:grid;place-items:center;font-size:13px;font-weight:800;
+  transition:all .4s;
+}
+.sim-step.on .n{background:var(--red);color:#fff}
+.sim-step.done .n{background:var(--success);color:#fff}
+.sim-step .t{font-size:13.5px;font-weight:700}
+.sim-step .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+.compare-card{
+  border-radius:16px;padding:22px;text-align:center;border:1.5px solid var(--border);
+  transition:transform .25s, box-shadow .25s;
+}
+.compare-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm)}
+.compare-card.after{border-color:var(--red);background:linear-gradient(180deg,var(--red-soft),var(--white))}
+.compare-card .k{font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px}
+.compare-card .v{font-size:38px;font-weight:900;letter-spacing:-.05em;line-height:1}
+.compare-card.after .v{color:var(--red)}
+.compare-card .d{font-size:12px;color:var(--muted);margin-top:8px}
+
+/* ANALYTICS */
+.bars{display:flex;align-items:flex-end;gap:12px;height:180px;padding-top:10px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px}
+.bar-col .b{
+  width:100%;border-radius:9px 9px 4px 4px;
+  background:linear-gradient(180deg,var(--red),var(--red-dark));
+  transition:height 1.1s cubic-bezier(.2,.7,.3,1), opacity .2s, transform .2s;
+  min-height:6px;height:0;
+}
+.bar-col:hover .b{opacity:.82;transform:scaleX(1.05)}
+.bar-col .l{font-size:11px;font-weight:700;color:var(--muted)}
+.bar-col .v{font-size:12px;font-weight:900;color:var(--text)}
+
+.heat-row{display:flex;gap:5px;margin-top:14px}
+.heat-cell{
+  flex:1;height:34px;border-radius:7px;background:var(--bg-2);
+  transition:transform .18s;cursor:pointer;
+}
+.heat-cell:hover{transform:scale(1.12)}
+
+/* DONUT */
+.donut-wrap{display:flex;align-items:center;gap:30px;flex-wrap:wrap}
+.donut{
+  width:160px;height:160px;border-radius:50%;flex:none;position:relative;
+  background:conic-gradient(
+    var(--red) 0deg 132deg,
+    #FB8C00 132deg 238deg,
+    var(--warning) 238deg 297deg,
+    var(--info) 297deg 328deg,
+    var(--success) 328deg 360deg
+  );
+  transition:transform .3s;
+}
+.donut:hover{transform:scale(1.04) rotate(-4deg)}
+.donut::after{content:'';position:absolute;inset:26px;border-radius:50%;background:var(--white)}
+.donut-center{
+  position:absolute;inset:0;display:grid;place-items:center;z-index:1;
+  font-size:24px;font-weight:900;letter-spacing:-.04em;
+}
+.donut-legend{flex:1;min-width:180px;display:flex;flex-direction:column;gap:10px}
+.dl-row{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600}
+.dl-row i{width:11px;height:11px;border-radius:3px;flex:none}
+.dl-row .v{margin-left:auto;font-weight:800}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{
+  text-align:left;padding:12px 20px;font-size:10.5px;font-weight:800;
+  color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;
+  background:var(--bg);border-bottom:1px solid var(--border);
+}
+.tbl td{padding:14px 20px;border-bottom:1px solid var(--border-2);font-weight:600}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg)}
+.tbl .id{font-weight:800;color:var(--red);font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* DRAWER */
+.drawer-bg{
+  position:fixed;inset:0;z-index:750;
+  background:rgba(17,24,39,.45);backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;
+}
+.drawer-bg.show{opacity:1;visibility:visible}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:440px;max-width:92vw;
+  background:var(--white);z-index:760;
+  transform:translateX(100%);transition:transform .4s cubic-bezier(.2,.7,.3,1);
+  display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(0,0,0,.15);
+}
+.drawer.show{transform:none}
+.drawer-head{
+  padding:20px 24px;border-bottom:1px solid var(--border-2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.drawer-head h3{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.drawer-body{flex:1;overflow-y:auto;padding:22px 24px}
+.drawer-foot{padding:16px 24px;border-top:1px solid var(--border-2);display:flex;gap:10px}
+
+/* NOTIFICATION PANEL */
+.notif-panel{
+  position:fixed;top:64px;right:24px;width:380px;max-width:92vw;
+  background:var(--white);border:1px solid var(--border);border-radius:18px;
+  box-shadow:var(--shadow-lg);z-index:700;
+  opacity:0;visibility:hidden;transform:translateY(-12px) scale(.97);
+  transition:all .3s cubic-bezier(.2,.7,.3,1);
+  overflow:hidden;
+}
+.notif-panel.show{opacity:1;visibility:visible;transform:none}
+.notif-head{
+  padding:16px 20px;border-bottom:1px solid var(--border-2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.notif-head h4{font-size:14px;font-weight:800}
+.notif-item{
+  display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border-2);
+  transition:background .18s;cursor:pointer;
+}
+.notif-item:hover{background:var(--bg)}
+.notif-item:last-child{border-bottom:none}
+.notif-item .ic{
+  width:34px;height:34px;border-radius:10px;flex:none;
+  display:grid;place-items:center;font-size:15px;
+}
+.notif-item .ic.red{background:var(--red-soft);color:var(--red)}
+.notif-item .ic.amber{background:var(--warning-soft);color:var(--warning)}
+.notif-item .ic.blue{background:var(--info-soft);color:var(--info)}
+.notif-item .ic.green{background:var(--success-soft);color:var(--success)}
+.notif-item .tx{flex:1;min-width:0}
+.notif-item .tx strong{display:block;font-size:13px;font-weight:700;margin-bottom:3px}
+.notif-item .tx span{font-size:11.5px;color:var(--muted);line-height:1.5}
+.notif-item .tm{font-size:10.5px;color:var(--muted-2);font-weight:700;flex:none}
+
+/* COMMAND PALETTE */
+.cmd-bg{
+  position:fixed;inset:0;z-index:850;
+  background:rgba(17,24,39,.45);backdrop-filter:blur(4px);
+  display:grid;place-items:start center;padding-top:14vh;
+  opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;
+}
+.cmd-bg.show{opacity:1;visibility:visible}
+.cmd{
+  width:560px;max-width:92vw;
+  background:var(--white);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow-lg);overflow:hidden;
+  transform:scale(.96) translateY(-8px);transition:transform .28s cubic-bezier(.2,.7,.3,1);
+}
+.cmd-bg.show .cmd{transform:none}
+.cmd-input{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1px solid var(--border-2);
+}
+.cmd-input svg{width:18px;height:18px;color:var(--muted-2)}
+.cmd-input input{
+  flex:1;border:none;outline:none;font-size:15px;font-weight:600;background:none;
+}
+.cmd-input kbd{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:3px 7px;border-radius:5px;background:var(--bg);border:1px solid var(--border);
+  color:var(--muted);
+}
+.cmd-list{max-height:340px;overflow-y:auto;padding:8px}
+.cmd-item{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;
+  font-size:13.5px;font-weight:600;cursor:pointer;color:var(--text-2);
+  transition:background .12s;
+}
+.cmd-item svg{width:16px;height:16px;color:var(--muted);stroke-width:1.9}
+.cmd-item:hover,.cmd-item.active{background:var(--red-soft);color:var(--red-dark)}
+.cmd-item:hover svg,.cmd-item.active svg{color:var(--red)}
+.cmd-item .k{margin-left:auto;font-size:10.5px;color:var(--muted-2);font-weight:700;font-family:'JetBrains Mono',monospace}
+.cmd-sec{
+  padding:12px 14px 6px;font-size:10px;font-weight:800;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted-2);
+}
+
+/* AI ORB */
+.ai-orb{
+  position:fixed;bottom:24px;right:24px;z-index:90;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(140deg,var(--red),var(--red-dark));
+  display:grid;place-items:center;color:#fff;
+  box-shadow:0 12px 34px rgba(229,57,53,.45);
+  cursor:pointer;transition:transform .25s;
+}
+.ai-orb:hover{transform:scale(1.1) rotate(8deg)}
+.ai-orb::before{
+  content:'';position:absolute;inset:-6px;border-radius:50%;
+  border:2px solid var(--red);opacity:.5;
+  animation:pulseRing 2.2s ease-out infinite;
+}
+.ai-orb::after{
+  content:'';position:absolute;inset:-14px;border-radius:50%;
+  border:1.5px solid var(--red);opacity:.28;
+  animation:pulseRing 2.2s ease-out infinite;
+  animation-delay:.4s;
+}
+.ai-orb svg{width:24px;height:24px;position:relative;z-index:1}
+
+/* ROLE SWITCHER */
+.role-switch{
+  display:flex;gap:4px;padding:4px;border-radius:11px;
+  background:var(--bg);border:1px solid var(--border-2);
+}
+.role-switch button{
+  padding:6px 11px;border-radius:8px;font-size:11.5px;font-weight:700;
+  color:var(--muted);transition:all .2s;
+}
+.role-switch button.active{background:var(--white);color:var(--red);box-shadow:var(--shadow-xs)}
+
+/* CONTACTS */
+.contact-card{
+  display:flex;align-items:center;gap:14px;padding:16px 18px;
+  border:1px solid var(--border);border-radius:14px;background:var(--white);
+  transition:all .22s;cursor:pointer;
+}
+.contact-card:hover{border-color:var(--red);transform:translateX(4px);box-shadow:var(--shadow-sm)}
+.contact-card .ic{
+  width:44px;height:44px;border-radius:12px;background:var(--red-soft);
+  display:grid;place-items:center;font-size:20px;flex:none;
+}
+.contact-card .n{font-size:14px;font-weight:800;margin-bottom:2px}
+.contact-card .num{font-size:12.5px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.contact-card .btn-call{
+  margin-left:auto;width:36px;height:36px;border-radius:10px;
+  background:var(--success-soft);color:var(--success);
+  display:grid;place-items:center;transition:all .2s;
+}
+.contact-card .btn-call:hover{background:var(--success);color:#fff;transform:scale(1.08)}
+
+/* SAFETY ALERTS */
+.alert-card{
+  border:1.5px solid var(--border);border-radius:14px;padding:18px;
+  background:var(--white);margin-bottom:12px;position:relative;overflow:hidden;
+  transition:all .25s;
+}
+.alert-card:hover{transform:translateX(4px);box-shadow:var(--shadow-sm)}
+.alert-card.critical{border-color:#FFCDD2;background:var(--red-soft)}
+.alert-card.warning{border-color:#FDE68A;background:var(--warning-soft)}
+.alert-card.info{border-color:#BFDBFE;background:var(--info-soft)}
+.alert-card .head{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.alert-card .head .p{font-size:14px;font-weight:800}
+.alert-card .head .pill{margin-left:auto}
+.alert-card p{font-size:13px;color:var(--text-2);line-height:1.6}
+.alert-card .meta{font-size:11px;color:var(--muted-2);font-weight:700;margin-top:10px}
+
+/* SKELETON */
+.skel{
+  background:linear-gradient(90deg,var(--bg-2) 25%,var(--bg) 50%,var(--bg-2) 75%);
+  background-size:200% 100%;
+  animation:skel 1.6s infinite;
+  border-radius:8px;
+}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* MODAL */
+.modal-bg{
+  position:fixed;inset:0;z-index:800;background:rgba(17,24,39,.5);
+  backdrop-filter:blur(4px);display:none;place-items:center;padding:24px;
+}
+.modal-bg.show{display:grid;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--white);border-radius:22px;max-width:520px;width:100%;
+  box-shadow:var(--shadow-lg);overflow:hidden;
+  animation:modalIn .34s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.modal-head{padding:26px 28px 0;text-align:center}
+.modal-head .ic{
+  width:62px;height:62px;border-radius:19px;margin:0 auto 16px;
+  background:var(--red-soft);display:grid;place-items:center;font-size:28px;
+}
+.modal-head h3{font-size:20px;font-weight:900;letter-spacing:-.02em;margin-bottom:8px}
+.modal-head p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.modal-body{padding:22px 28px}
+.modal-foot{padding:0 28px 26px;display:flex;gap:11px}
+.modal-foot .btn{flex:1}
+
+/* TOASTS */
+#toasts{
+  position:fixed;right:24px;bottom:94px;z-index:900;
+  display:flex;flex-direction:column;gap:11px;pointer-events:none;
+}
+.toast{
+  display:flex;align-items:center;gap:12px;
+  background:var(--white);border:1px solid var(--border);border-left:4px solid var(--red);
+  border-radius:13px;padding:14px 18px;box-shadow:var(--shadow-lg);
+  min-width:290px;max-width:380px;
+  animation:toastIn .38s cubic-bezier(.2,.7,.3,1);
+  pointer-events:auto;
+}
+.toast.ok{border-left-color:var(--success)}
+.toast.info{border-left-color:var(--info)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px) scale(.95)}to{opacity:1;transform:none}}
+.toast .ic{font-size:17px;flex:none}
+.toast .tx{font-size:13px;font-weight:600;line-height:1.5}
+.toast .tx strong{display:block;font-weight:800;margin-bottom:1px}
+
+/* RESPONSIVE */
+@media (max-width:1180px){
+  .grid-2,.grid-2b,.grid-3{grid-template-columns:1fr}
+  .copilot-wrap{grid-template-columns:1fr}
+}
+@media (max-width:1024px){
+  .hero{grid-template-columns:1fr;gap:48px;padding-top:56px}
+  .land-links{display:none}
+  .clock-widget{display:none}
+}
+@media (max-width:860px){
+  :root{--sidebar:0px}
+  .sidebar{transform:translateX(-100%);transition:transform .3s;width:264px;box-shadow:var(--shadow-lg)}
+  .sidebar.open{transform:none}
+  .main{margin-left:0}
+  .content{padding:20px 16px 48px}
+  .topbar{padding:12px 16px}
+  .topbar-search{display:none}
+  .status-banner{flex-wrap:wrap}
+  .status-banner .right{margin-left:0;width:100%;justify-content:space-between}
+  .route-metrics{grid-template-columns:repeat(2,1fr)}
+  .type-grid{grid-template-columns:repeat(2,1fr)}
+  .field-row{grid-template-columns:1fr}
+  .hosp-stats{grid-template-columns:repeat(2,1fr)}
+  .compare{grid-template-columns:1fr}
+  .hero-stats{gap:28px}
+  .drawer{width:100%}
+}
+.mobile-menu{display:none}
+@media (max-width:860px){.mobile-menu{display:grid}}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     BOOT SCREEN
+     ============================================================ -->
+<div id="bootScreen">
+  <div class="boot-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 2l8 3.4v6.1c0 5-3.4 9.4-8 10.5-4.6-1.1-8-5.5-8-10.5V5.4L12 2z" fill="#fff"/>
+      <path d="M12 8v8M8 12h8" stroke="#E53935" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="boot-title">ResQRoute <span>AI</span></div>
+  <div class="boot-sub">Emergency Intelligence Network</div>
+  <div class="boot-progress"><i id="bootBar"></i></div>
+  <div class="boot-status" id="bootStatus">Initializing systems…</div>
+</div>
+
+<!-- CONFETTI CANVAS -->
+<div id="confetti"></div>
+
+<!-- ============================================================
+     LANDING
+     ============================================================ -->
+<div class="landing" id="landing">
+  <nav class="land-nav">
+    <div class="land-brand">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l8 3.4v6.1c0 5-3.4 9.4-8 10.5-4.6-1.1-8-5.5-8-10.5V5.4L12 2z" fill="#fff"/>
+          <path d="M12 8v8M8 12h8" stroke="#E53935" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="name">ResQRoute<span>AI</span></div>
+        <div class="sub">Emergency Intelligence</div>
+      </div>
+    </div>
+    <div class="land-links">
+      <a href="#features">Platform</a>
+      <a href="#how">How it Works</a>
+      <a href="#impact">Impact</a>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost btn-sm ripple dark" onclick="enterApp('dashboard')">Sign In</button>
+      <button class="btn btn-red btn-sm ripple" onclick="enterApp('dashboard')">Launch Console</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="live-dot"></span> LIVE EMERGENCY INTELLIGENCE NETWORK
+      </div>
+      <h1>When every second matters, <em>AI finds the way.</em></h1>
+      <p class="lead">
+        ResQRoute AI doesn't just find the shortest route — it finds the safest, fastest,
+        and most survivable path. Real-time hazard analysis, intelligent hospital matching,
+        and autonomous responder dispatch in one command center.
+      </p>
+      <div class="hero-cta">
+        <button class="btn btn-red ripple" onclick="enterApp('dashboard')">
+          Enter Command Center
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button class="btn btn-ghost ripple dark" onclick="enterApp('report')">Report Emergency</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="n"><span data-count="8.4" data-dec="1">0</span><i>m</i></div>
+          <div class="l">Average Response Time</div>
+        </div>
+        <div class="hero-stat">
+          <div class="n"><span data-count="248">0</span></div>
+          <div class="l">Incidents Handled</div>
+        </div>
+        <div class="hero-stat">
+          <div class="n"><span data-count="96.8" data-dec="1">0</span><i>%</i></div>
+          <div class="l">Dispatch Success</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="preview">
+        <div class="preview-bar">
+          <span class="d" style="background:#FF5F57"></span>
+          <span class="d" style="background:#FEBC2E"></span>
+          <span class="d" style="background:#28C840"></span>
+          <span class="title">RESQROUTE · LIVE OPERATIONS</span>
+        </div>
+        <div class="preview-body">
+          <div class="preview-kpis">
+            <div class="pk"><div class="v r">12</div><div class="k">Active</div></div>
+            <div class="pk"><div class="v">34</div><div class="k">Units</div></div>
+            <div class="pk"><div class="v">8.4</div><div class="k">Avg Min</div></div>
+          </div>
+          <div class="map-mount hero-map map-mount-el">
+            <div class="map-scan"></div>
+            <div class="radar"></div>
+            <div class="map-legend">
+              <span><i style="background:#E53935"></i>Incident</span>
+              <span><i style="background:#16A34A"></i>Hospital</span>
+              <span><i style="background:#2563EB"></i>Ambulance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="features-head">
+      <h2>Not just a map. <span>An emergency decision engine.</span></h2>
+      <p>Every incident flows through a six-stage intelligence pipeline — from detection to resolution — with measurable impact at each step.</p>
+    </div>
+    <div class="feature-grid" id="featureGrid">
+      <div class="feature">
+        <div class="ico">🧠</div>
+        <h3>AI Emergency Analysis</h3>
+        <p>Converts raw incident reports into structured severity scores, victim estimates, and recommended response units in under two seconds.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🛣️</div>
+        <h3>Smart Route Intelligence</h3>
+        <p>Weighs live traffic, road obstructions, flooding, and hazard density — then recommends the safest emergency corridor, not the shortest.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🏥</div>
+        <h3>Hospital Matching</h3>
+        <p>Matches trauma capability, ICU availability, bed capacity, and current load to select the optimal receiving facility.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🎙️</div>
+        <h3>Voice Emergency Input</h3>
+        <p>"There's an accident near the railway station." — parsed into emergency type, location, severity, and required response automatically.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">📡</div>
+        <h3>Live Command Center</h3>
+        <p>A single operational picture for every active incident, unit, hospital, and responder — updated in real time.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🔮</div>
+        <h3>Predictive Risk Zones</h3>
+        <p>Forecasts emergency probability by zone, hour, and contributing factor — so resources move before the incident happens.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="story" id="how">
+    <div class="story-inner">
+      <h2>The Emergency Intelligence Pipeline</h2>
+      <p class="sub">Report → Analyze → Predict → Route → Respond → Resolve</p>
+      <div class="flow">
+        <div class="flow-step"><div class="n">1</div><div class="t">Report</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="n">2</div><div class="t">Analyze</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="n">3</div><div class="t">Predict</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="n">4</div><div class="t">Route</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="n">5</div><div class="t">Respond</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="n">6</div><div class="t">Resolve</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band" id="impact">
+    <div class="cta-box">
+      <h2>Response time: 8.4 min → 6.1 min</h2>
+      <p>That's a 27% reduction in emergency response time — the difference between life and loss. See it live in the Simulation Lab.</p>
+      <button class="btn ripple dark" onclick="enterApp('simulation')">
+        Run a Live Simulation
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <footer class="land-foot">
+    <div>© 2026 ResQRoute AI · Emergency Route Intelligence System</div>
+    <div>Built for Algothon '26</div>
+  </footer>
+</div>
+
+<!-- ============================================================
+     APP
+     ============================================================ -->
+<div class="app" id="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l8 3.4v6.1c0 5-3.4 9.4-8 10.5-4.6-1.1-8-5.5-8-10.5V5.4L12 2z" fill="#fff"/>
+          <path d="M12 8v8M8 12h8" stroke="#E53935" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">ResQRoute<span>AI</span></div>
+        <div class="brand-sub">Emergency Ops</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Operations</div>
+      <button class="nav-item active" data-page="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-page="report">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+        Report Emergency
+      </button>
+      <button class="nav-item" data-page="analysis">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>
+        AI Analysis
+        <span class="badge">3</span>
+      </button>
+      <button class="nav-item" data-page="routes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h5a4 4 0 000-8H9a4 4 0 010-8h5"/></svg>
+        Smart Routes
+      </button>
+      <button class="nav-item" data-page="hospitals">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M12 9v6M9 12h6"/></svg>
+        Hospitals
+      </button>
+      <button class="nav-item" data-page="tracking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Live Tracking
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Intelligence</div>
+      <button class="nav-item" data-page="command">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Command Center
+      </button>
+      <button class="nav-item" data-page="copilot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        AI Copilot
+      </button>
+      <button class="nav-item" data-page="risk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l9 5v6c0 5.2-3.8 9.5-9 10.8C6.8 22.5 3 18.2 3 13V7l9-5z"/><path d="M12 8v4M12 16h.01"/></svg>
+        Risk Intelligence
+      </button>
+      <button class="nav-item" data-page="simulation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+        Simulation Lab
+      </button>
+      <button class="nav-item" data-page="analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+        Analytics
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Community</div>
+      <button class="nav-item" data-page="contacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.6a2 2 0 01-.5 2.1L8 9.6a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.8.3 1.7.5 2.6.6a2 2 0 011.7 2z"/></svg>
+        Emergency Contacts
+      </button>
+      <button class="nav-item" data-page="alerts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        Safety Alerts
+      </button>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="system-card">
+        <div class="row"><span>Detection</span><span class="ok">ON</span></div>
+        <div class="row"><span>Routing</span><span class="ok">ON</span></div>
+        <div class="row"><span>Prediction</span><span class="ok">ON</span></div>
+        <div class="row"><span>Hospital AI</span><span class="ok">ON</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn mobile-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <div class="topbar-title" id="topTitle">Operations Dashboard</div>
+        <div class="topbar-crumb" id="topCrumb">Real-time emergency overview</div>
+      </div>
+
+      <div class="clock-widget">
+        <span class="t" id="clockTime">00:00:00</span>
+        <span class="d" id="clockDate">—</span>
+        <span class="w">🌤️ <span id="weather">28°C</span></span>
+      </div>
+
+      <div class="topbar-search" onclick="openCmd()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input placeholder="Search or jump to..." readonly />
+        <kbd>⌘K</kbd>
+      </div>
+
+      <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+      </button>
+
+      <button class="icon-btn bell" id="bellBtn" onclick="toggleNotif(event)" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span class="n">3</span>
+      </button>
+
+      <div class="profile" onclick="toast('info','Profile','Signed in as Manoj K. · Ops Commander')">
+        <div class="avatar">MK</div>
+        <div>
+          <div class="who">Manoj K.</div>
+          <div class="role">Ops Commander</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- LIVE TICKER -->
+    <div class="ticker">
+      <div class="label"><span class="live-dot" style="background:#fff"></span>LIVE</div>
+      <div class="ticker-track">
+        <div class="ticker-inner" id="tickerInner">
+          <span>🚨 <b>RQ-1048</b> Multi-vehicle accident on NH-16 · 2 ambulances en route</span>
+          <span>🏥 Apollo General at <b>42%</b> load · accepting trauma</span>
+          <span>⚠️ Main Junction congestion <b>82%</b> hazard · avoid if possible</span>
+          <span>🚑 Ambulance <b>A-07</b> ETA 4 min to incident</span>
+          <span>🔮 Zone 01 risk rising · pre-position recommended</span>
+          <span>🚨 <b>RQ-1048</b> Multi-vehicle accident on NH-16 · 2 ambulances en route</span>
+          <span>🏥 Apollo General at <b>42%</b> load · accepting trauma</span>
+          <span>⚠️ Main Junction congestion <b>82%</b> hazard · avoid if possible</span>
+          <span>🚑 Ambulance <b>A-07</b> ETA 4 min to incident</span>
+          <span>🔮 Zone 01 risk rising · pre-position recommended</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ============ DASHBOARD ============ -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-head">
+          <h1>Good morning, Manoj 👋</h1>
+          <p>All emergency systems are operational. Here's your live operational picture.</p>
+        </div>
+
+        <div class="status-banner">
+          <div class="ico">✅</div>
+          <div class="txt">
+            <strong>ALL SYSTEMS OPERATIONAL</strong>
+            <span>AI routing, prediction, and dispatch engines running at full capacity</span>
+          </div>
+          <div class="right">
+            <div class="m"><div class="v">99.98%</div><div class="k">Uptime</div></div>
+            <div class="m"><div class="v">1.2s</div><div class="k">AI Latency</div></div>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="ico">🚨</div>
+            <div class="val"><span data-count="12">0</span></div>
+            <div class="lbl">Active Emergencies</div>
+            <div class="trend down">▲ 2 since last hour</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">🚑</div>
+            <div class="val"><span data-count="34">0</span></div>
+            <div class="lbl">Available Units</div>
+            <div class="trend up">▲ 6 ready to deploy</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">⏱️</div>
+            <div class="val"><span data-count="8.4" data-dec="1">0</span><small>min</small></div>
+            <div class="lbl">Avg Response Time</div>
+            <div class="trend up">▼ 0.6m faster</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">🏥</div>
+            <div class="val"><span data-count="18">0</span></div>
+            <div class="lbl">Hospitals Ready</div>
+            <div class="trend up">▲ All accepting</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M9 20l-5.4 2.7A1 1 0 012 21.8V6.2a1 1 0 01.6-.9L9 2.5M9 20l6-3M9 20V2.5M15 17l6-3M15 17V5.5M21 14V2.2a1 1 0 00-1.4-.9L15 3.5"/></svg>
+                Live Emergency Map
+              </h3>
+              <span class="pill pill-red"><span class="live-dot" style="background:#E53935"></span> LIVE</span>
+            </div>
+            <div class="panel-body" style="padding:14px">
+              <div class="map-mount tall map-mount-el">
+                <div class="map-scan"></div>
+                <div class="radar"></div>
+                <div class="map-legend">
+                  <span><i style="background:#E53935"></i>Incident</span>
+                  <span><i style="background:#16A34A"></i>Hospital</span>
+                  <span><i style="background:#2563EB"></i>Ambulance</span>
+                  <span><i style="background:#F59E0B"></i>Hazard</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+                AI Priority Queue
+              </h3>
+              <span class="pill pill-gray">4 active</span>
+            </div>
+            <div class="panel-body tight">
+              <div class="queue-item" onclick="openIncident('RQ-1048','Multi-Vehicle Accident','NH-16, Zone 01','Critical')">
+                <span class="bar bar-critical"></span>
+                <div class="info">
+                  <div class="t">Multi-Vehicle Accident</div>
+                  <div class="s"><span>NH-16 · Zone 01</span><span class="pill pill-red">Critical</span></div>
+                </div>
+                <div class="eta"><div class="v">6</div><div class="k">min</div></div>
+              </div>
+              <div class="queue-item" onclick="openIncident('RQ-1047','Medical Emergency','Sector 7, Zone 02','High')">
+                <span class="bar bar-high"></span>
+                <div class="info">
+                  <div class="t">Medical Emergency</div>
+                  <div class="s"><span>Sector 7 · Zone 02</span><span class="pill pill-amber">High</span></div>
+                </div>
+                <div class="eta"><div class="v">9</div><div class="k">min</div></div>
+              </div>
+              <div class="queue-item" onclick="openIncident('RQ-1046','Road Blockage','Ring Road, Zone 03','Medium')">
+                <span class="bar bar-medium"></span>
+                <div class="info">
+                  <div class="t">Road Blockage</div>
+                  <div class="s"><span>Ring Road · Zone 03</span><span class="pill pill-blue">Medium</span></div>
+                </div>
+                <div class="eta"><div class="v">14</div><div class="k">min</div></div>
+              </div>
+              <div class="queue-item" onclick="openIncident('RQ-1045','Minor Fire Report','Market St, Zone 05','Low')">
+                <span class="bar bar-low"></span>
+                <div class="info">
+                  <div class="t">Minor Fire Report</div>
+                  <div class="s"><span>Market St · Zone 05</span><span class="pill pill-green">Low</span></div>
+                </div>
+                <div class="eta"><div class="v">18</div><div class="k">min</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>
+              AI Insights
+            </h3>
+            <span class="pill pill-gray">Updated 12s ago</span>
+          </div>
+          <div class="panel-body">
+            <div class="insight">
+              <div class="ic">📊</div>
+              <p><strong>3 incidents detected</strong> in high-risk Zone 01 within the last 40 minutes. Pattern suggests recurring junction congestion.</p>
+            </div>
+            <div class="insight">
+              <div class="ic">📈</div>
+              <p><strong>Ambulance demand may increase by 18%</strong> between 18:00–21:00. Recommend pre-positioning 2 units near Zone 04.</p>
+            </div>
+            <div class="insight">
+              <div class="ic">🏥</div>
+              <p><strong>Recommended hospital: Apollo General</strong> — lowest current load (42%) and highest trauma readiness score.</p>
+            </div>
+            <div class="insight">
+              <div class="ic">🛣️</div>
+              <p><strong>Route B has the lowest risk score</strong> for the NH-16 corridor, avoiding the congested Main Junction.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ REPORT ============ -->
+      <section class="page" id="page-report">
+        <div class="page-head">
+          <h1>Report Emergency</h1>
+          <p>Your location will be shared with the nearest available responders immediately.</p>
+        </div>
+
+        <div class="sos-wrap">
+          <div class="sos-card">
+            <h2>EMERGENCY?</h2>
+            <p class="hint">Hold the button below for 2 seconds to trigger an SOS dispatch.</p>
+
+            <button class="sos-btn" id="sosBtn">
+              <span class="fill" id="sosFill"></span>
+              <span class="inner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+                <span class="big">HOLD FOR SOS</span>
+                <span class="small">Hold 2 seconds</span>
+              </span>
+            </button>
+
+            <div class="type-grid" id="typeGrid">
+              <button class="type-chip active" data-type="Accident"><span class="e">🚗</span>Accident</button>
+              <button class="type-chip" data-type="Medical"><span class="e">🩺</span>Medical</button>
+              <button class="type-chip" data-type="Fire"><span class="e">🔥</span>Fire</button>
+              <button class="type-chip" data-type="Flood"><span class="e">🌊</span>Flood</button>
+              <button class="type-chip" data-type="Security"><span class="e">🛡️</span>Security</button>
+              <button class="type-chip" data-type="Other"><span class="e">➕</span>Other</button>
+            </div>
+
+            <div class="mini-actions">
+              <button class="mini-btn ripple dark" id="voiceBtn" onclick="toggleVoice()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v4"/></svg>
+                Voice Report
+              </button>
+              <button class="mini-btn ripple dark" onclick="toast('info','Upload ready','Attach photo or video evidence')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Upload Image
+              </button>
+            </div>
+
+            <div class="field">
+              <label>Location</label>
+              <input type="text" value="NH-16, Near Railway Station, Zone 01" />
+            </div>
+
+            <div class="field">
+              <label>Description (optional)</label>
+              <textarea placeholder="Describe what you see — number of vehicles, injuries, hazards...">Multi-vehicle collision near the railway station underpass. Two cars, one overturned. Traffic backing up.</textarea>
+            </div>
+
+            <button class="btn btn-red ripple" style="width:100%;padding:16px" onclick="submitReport()">
+              Submit Emergency Report
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANALYSIS ============ -->
+      <section class="page" id="page-analysis">
+        <div class="page-head">
+          <h1>AI Emergency Analysis</h1>
+          <p>Incident #RQ-1048 · Processed in 1.2 seconds · Model confidence 94.7%</p>
+        </div>
+
+        <div class="grid-2b">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Severity Assessment
+              </h3>
+              <span class="pill pill-red">CRITICAL</span>
+            </div>
+            <div class="panel-body">
+              <div class="gauge-wrap">
+                <div class="gauge" id="sevGauge">
+                  <div class="gauge-in">
+                    <div class="v" id="sevVal">0</div>
+                    <div class="k">Severity</div>
+                  </div>
+                </div>
+                <div class="gauge-meta">
+                  <div class="row"><span class="k">Incident Type</span><span class="v">Traffic Accident</span></div>
+                  <div class="row"><span class="k">AI Confidence</span><span class="v">94.7%</span></div>
+                  <div class="row"><span class="k">Est. Victims</span><span class="v">3</span></div>
+                  <div class="row"><span class="k">Priority</span><span class="v" style="color:#E53935">P1 — Immediate</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 2l9 5v6c0 5.2-3.8 9.5-9 10.8C6.8 22.5 3 18.2 3 13V7l9-5z"/></svg>
+                Risk Factors Detected
+              </h3>
+            </div>
+            <div class="panel-body">
+              <div class="chip-list">
+                <span class="chip">⚠️ Heavy traffic</span>
+                <span class="chip">🚧 Road obstruction</span>
+                <span class="chip">🩸 Possible injuries</span>
+                <span class="chip">🌧️ Wet surface</span>
+                <span class="chip">🚑 Ambulance required</span>
+                <span class="chip neutral">🌡️ 32°C</span>
+              </div>
+
+              <div style="margin-top:22px">
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:8px">
+                  <span>Hazard Density</span><span style="color:#E53935">82%</span>
+                </div>
+                <div class="meter"><i data-w="82"></i></div>
+              </div>
+              <div style="margin-top:16px">
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:8px">
+                  <span>Route Risk</span><span style="color:#F59E0B">47%</span>
+                </div>
+                <div class="meter"><i data-w="47" style="background:linear-gradient(90deg,#F59E0B,#D97706)"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:18px">
+          <div class="panel-head">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+              Recommended Response Units
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="response-grid">
+              <div class="response-card"><div class="e">🚑</div><div class="t">Ambulance</div><div class="s">2 units</div></div>
+              <div class="response-card"><div class="e">🚓</div><div class="t">Police</div><div class="s">1 unit</div></div>
+              <div class="response-card"><div class="e">🚒</div><div class="t">Fire Support</div><div class="s">Standby</div></div>
+              <div class="response-card"><div class="e">🏥</div><div class="t">Trauma Center</div><div class="s">Notified</div></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-red ripple" style="width:100%;padding:18px;font-size:15px" onclick="dispatch()">
+          🚀 DISPATCH RESPONSE
+        </button>
+      </section>
+
+      <!-- ============ ROUTES ============ -->
+      <section class="page" id="page-routes">
+        <div class="page-head">
+          <h1>Smart Route Intelligence</h1>
+          <p>Comparing emergency corridors by ETA, distance, hazard risk, and live traffic — not just shortest distance.</p>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <div class="route-card" data-route="A" onclick="pickRoute(this,'A')">
+              <div class="route-top">
+                <div class="name">Route A</div>
+                <span class="pill pill-gray tag">Shortest</span>
+              </div>
+              <div class="route-metrics">
+                <div class="m"><div class="v">8 min</div><div class="k">ETA</div></div>
+                <div class="m"><div class="v">4.2 km</div><div class="k">Distance</div></div>
+                <div class="m"><div class="v" style="color:#16A34A">Low</div><div class="k">Risk</div></div>
+                <div class="m"><div class="v">Moderate</div><div class="k">Traffic</div></div>
+              </div>
+            </div>
+
+            <div class="route-card best" data-route="B" onclick="pickRoute(this,'B')">
+              <div class="route-top">
+                <div class="name">Route B</div>
+                <span class="pill pill-red tag">AI Recommended</span>
+              </div>
+              <div class="route-metrics">
+                <div class="m"><div class="v" style="color:#E53935">6 min</div><div class="k">ETA</div></div>
+                <div class="m"><div class="v">3.8 km</div><div class="k">Distance</div></div>
+                <div class="m"><div class="v" style="color:#F59E0B">Medium</div><div class="k">Risk</div></div>
+                <div class="m"><div class="v">Light</div><div class="k">Traffic</div></div>
+              </div>
+            </div>
+
+            <div class="route-card" data-route="C" onclick="pickRoute(this,'C')">
+              <div class="route-top">
+                <div class="name">Route C</div>
+                <span class="pill pill-green tag">Safest</span>
+              </div>
+              <div class="route-metrics">
+                <div class="m"><div class="v">10 min</div><div class="k">ETA</div></div>
+                <div class="m"><div class="v">5.1 km</div><div class="k">Distance</div></div>
+                <div class="m"><div class="v" style="color:#16A34A">Very Low</div><div class="k">Risk</div></div>
+                <div class="m"><div class="v">Clear</div><div class="k">Traffic</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel" style="margin-bottom:18px">
+              <div class="panel-head"><h3>Route Preview</h3></div>
+              <div class="panel-body" style="padding:14px">
+                <div class="map-mount tall map-mount-el">
+                  <div class="radar"></div>
+                  <div class="map-legend">
+                    <span><i style="background:#E53935"></i>AI Route</span>
+                    <span><i style="background:#CBD5E1"></i>Shortest</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-reco">
+              <div class="ic">✨</div>
+              <div>
+                <div class="t">AI Recommendation</div>
+                <p><strong>Route B selected.</strong> It is 2 minutes faster than the shortest route and avoids a congested main junction plus a reported road obstruction on NH-16.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ HOSPITALS ============ -->
+      <section class="page" id="page-hospitals">
+        <div class="page-head">
+          <h1>Hospital Intelligence</h1>
+          <p>Ranked by trauma readiness, ICU availability, current load, and travel ETA from the incident.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="hospital-card reco">
+            <div class="hosp-top">
+              <div class="ic">🏥</div>
+              <div style="flex:1">
+                <div class="n">Apollo General Hospital</div>
+                <div class="d"><span class="pill pill-red">AI Recommended</span></div>
+              </div>
+            </div>
+            <div class="hosp-stats">
+              <div class="s"><div class="v" style="color:#16A34A">Open</div><div class="k">Emergency</div></div>
+              <div class="s"><div class="v">6</div><div class="k">ICU</div></div>
+              <div class="s"><div class="v">18</div><div class="k">Beds</div></div>
+              <div class="s"><div class="v">9m</div><div class="k">ETA</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:8px">
+              <span style="color:var(--muted)">Current Load</span><span style="color:#16A34A">42%</span>
+            </div>
+            <div class="meter"><i data-w="42" style="background:linear-gradient(90deg,#16A34A,#15803D)"></i></div>
+            <button class="btn btn-red btn-sm ripple" style="width:100%;margin-top:16px" onclick="selectHospital('Apollo General')">Select Hospital</button>
+          </div>
+
+          <div class="hospital-card">
+            <div class="hosp-top">
+              <div class="ic">🏥</div>
+              <div style="flex:1">
+                <div class="n">Government General Hospital</div>
+                <div class="d"><span class="pill pill-green">Available</span></div>
+              </div>
+            </div>
+            <div class="hosp-stats">
+              <div class="s"><div class="v" style="color:#16A34A">Open</div><div class="k">Emergency</div></div>
+              <div class="s"><div class="v">3</div><div class="k">ICU</div></div>
+              <div class="s"><div class="v">11</div><div class="k">Beds</div></div>
+              <div class="s"><div class="v">12m</div><div class="k">ETA</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:8px">
+              <span style="color:var(--muted)">Current Load</span><span style="color:#F59E0B">67%</span>
+            </div>
+            <div class="meter"><i data-w="67" style="background:linear-gradient(90deg,#F59E0B,#D97706)"></i></div>
+            <button class="btn btn-ghost btn-sm ripple dark" style="width:100%;margin-top:16px" onclick="selectHospital('Government General')">Select Hospital</button>
+          </div>
+
+          <div class="hospital-card">
+            <div class="hosp-top">
+              <div class="ic">🏥</div>
+              <div style="flex:1">
+                <div class="n">City Care Medical Center</div>
+                <div class="d"><span class="pill pill-green">Available</span></div>
+              </div>
+            </div>
+            <div class="hosp-stats">
+              <div class="s"><div class="v" style="color:#16A34A">Open</div><div class="k">Emergency</div></div>
+              <div class="s"><div class="v">9</div><div class="k">ICU</div></div>
+              <div class="s"><div class="v">24</div><div class="k">Beds</div></div>
+              <div class="s"><div class="v">14m</div><div class="k">ETA</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:8px">
+              <span style="color:var(--muted)">Current Load</span><span style="color:#16A34A">31%</span>
+            </div>
+            <div class="meter"><i data-w="31" style="background:linear-gradient(90deg,#16A34A,#15803D)"></i></div>
+            <button class="btn btn-ghost btn-sm ripple dark" style="width:100%;margin-top:16px" onclick="selectHospital('City Care')">Select Hospital</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TRACKING ============ -->
+      <section class="page" id="page-tracking">
+        <div class="page-head">
+          <h1>Live Incident Tracking</h1>
+          <p>Incident #RQ-1048 · Multi-vehicle accident · NH-16, Zone 01</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Incident Timeline</h3>
+              <span class="pill pill-red">EN ROUTE</span>
+            </div>
+            <div class="panel-body">
+              <div class="timeline">
+                <div class="tl-item done"><div class="tm">10:42</div><div class="tx">Emergency reported by citizen</div></div>
+                <div class="tl-item done"><div class="tm">10:43</div><div class="tx">AI analysis completed — severity 91/100</div></div>
+                <div class="tl-item done"><div class="tm">10:44</div><div class="tx">Ambulance #A-07 assigned</div></div>
+                <div class="tl-item done"><div class="tm">10:46</div><div class="tx">Responder dispatched via Route B</div></div>
+                <div class="tl-item done"><div class="tm">10:48</div><div class="tx">Ambulance approaching incident zone</div></div>
+                <div class="tl-item done"><div class="tm">10:55</div><div class="tx">Apollo General Hospital notified</div></div>
+                <div class="tl-item now"><div class="tm">NOW</div><div class="tx">Ambulance en route — ETA 4 minutes</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel" style="margin-bottom:18px">
+              <div class="panel-head"><h3>Live Position</h3><span class="pill pill-red"><span class="live-dot" style="background:#E53935"></span>LIVE</span></div>
+              <div class="panel-body" style="padding:14px">
+                <div class="map-mount tall map-mount-el">
+                  <div class="radar"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="kpi-grid" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+              <div class="kpi">
+                <div class="lbl">Current ETA</div>
+                <div class="val" style="color:#E53935">4<small>min</small></div>
+              </div>
+              <div class="kpi">
+                <div class="lbl">Distance Left</div>
+                <div class="val">2.1<small>km</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ COMMAND ============ -->
+      <section class="page" id="page-command">
+        <div class="page-head">
+          <h1>ResQRoute Command Center</h1>
+          <p>Full-spectrum operational view across all active incidents, units, and facilities.</p>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="ico">🚨</div>
+            <div class="val"><span data-count="12">0</span></div>
+            <div class="lbl">Active Incidents</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">🚑</div>
+            <div class="val"><span data-count="34">0</span></div>
+            <div class="lbl">Available Units</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">🏥</div>
+            <div class="val"><span data-count="18">0</span></div>
+            <div class="lbl">Hospitals Ready</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">⏱️</div>
+            <div class="val"><span data-count="8.4" data-dec="1">0</span><small>min</small></div>
+            <div class="lbl">Avg Response</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Live Emergency Map</h3>
+              <span class="pill pill-red"><span class="live-dot" style="background:#E53935"></span>LIVE</span>
+            </div>
+            <div class="panel-body" style="padding:14px">
+              <div class="map-mount tall map-mount-el">
+                <div class="map-scan"></div>
+                <div class="radar"></div>
+                <div class="map-legend">
+                  <span><i style="background:#E53935"></i>Incident</span>
+                  <span><i style="background:#16A34A"></i>Hospital</span>
+                  <span><i style="background:#2563EB"></i>Ambulance</span>
+                  <span><i style="background:#F59E0B"></i>Hazard</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel" style="margin-bottom:18px">
+              <div class="panel-head"><h3>Critical Incidents</h3></div>
+              <div class="panel-body tight">
+                <div class="queue-item">
+                  <span class="bar bar-critical"></span>
+                  <div class="info">
+                    <div class="t">RQ-1048 · Accident</div>
+                    <div class="s"><span>NH-16</span></div>
+                  </div>
+                  <span class="pill pill-red">Critical</span>
+                </div>
+                <div class="queue-item">
+                  <span class="bar bar-high"></span>
+                  <div class="info">
+                    <div class="t">RQ-1047 · Medical</div>
+                    <div class="s"><span>Sector 7</span></div>
+                  </div>
+                  <span class="pill pill-amber">High</span>
+                </div>
+                <div class="queue-item">
+                  <span class="bar bar-high"></span>
+                  <div class="info">
+                    <div class="t">RQ-1046 · Fire</div>
+                    <div class="s"><span>Industrial Area</span></div>
+                  </div>
+                  <span class="pill pill-amber">High</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><h3>AI System Status</h3></div>
+              <div class="panel-body">
+                <div class="zone-row"><span class="z">Detection</span><div class="track"><i data-w="100" style="background:linear-gradient(90deg,#16A34A,#15803D)"></i></div><span class="p" style="color:#16A34A">ON</span></div>
+                <div class="zone-row"><span class="z">Routing</span><div class="track"><i data-w="100" style="background:linear-gradient(90deg,#16A34A,#15803D)"></i></div><span class="p" style="color:#16A34A">ON</span></div>
+                <div class="zone-row"><span class="z">Prediction</span><div class="track"><i data-w="100" style="background:linear-gradient(90deg,#16A34A,#15803D)"></i></div><span class="p" style="color:#16A34A">ON</span></div>
+                <div class="zone-row"><span class="z">Hospital AI</span><div class="track"><i data-w="100" style="background:linear-gradient(90deg,#16A34A,#15803D)"></i></div><span class="p" style="color:#16A34A">ON</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Active Incident Registry</h3><span class="pill pill-gray">12 records</span></div>
+          <div class="panel-body tight" style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr><th>ID</th><th>Type</th><th>Location</th><th>Severity</th><th>Assigned Unit</th><th>ETA</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="id">RQ-1048</td><td>Accident</td><td>NH-16, Zone 01</td><td><span class="pill pill-red">Critical</span></td><td>A-07, P-12</td><td>4 min</td><td><span class="pill pill-blue">En Route</span></td></tr>
+                <tr><td class="id">RQ-1047</td><td>Medical</td><td>Sector 7, Zone 02</td><td><span class="pill pill-amber">High</span></td><td>A-11</td><td>9 min</td><td><span class="pill pill-blue">En Route</span></td></tr>
+                <tr><td class="id">RQ-1046</td><td>Fire</td><td>Industrial Area</td><td><span class="pill pill-amber">High</span></td><td>F-03, F-05</td><td>7 min</td><td><span class="pill pill-blue">En Route</span></td></tr>
+                <tr><td class="id">RQ-1045</td><td>Road Block</td><td>Ring Road</td><td><span class="pill pill-blue">Medium</span></td><td>P-08</td><td>14 min</td><td><span class="pill pill-gray">Assigned</span></td></tr>
+                <tr><td class="id">RQ-1044</td><td>Flood</td><td>Low-lying Colony</td><td><span class="pill pill-blue">Medium</span></td><td>R-02</td><td>16 min</td><td><span class="pill pill-gray">Assigned</span></td></tr>
+                <tr><td class="id">RQ-1043</td><td>Security</td><td>Market Street</td><td><span class="pill pill-green">Low</span></td><td>P-15</td><td>18 min</td><td><span class="pill pill-gray">Assigned</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ COPILOT ============ -->
+      <section class="page" id="page-copilot">
+        <div class="page-head">
+          <h1>ResQ AI Copilot</h1>
+          <p>Your emergency operations assistant — ask anything about live incidents, routing, and resource allocation.</p>
+        </div>
+
+        <div class="copilot-wrap">
+          <div class="panel chat">
+            <div class="panel-head">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                ResQ Copilot
+              </h3>
+              <span class="pill pill-green"><span class="live-dot"></span>Online</span>
+            </div>
+            <div class="chat-body" id="chatBody">
+              <div class="msg ai">
+                <div class="av">AI</div>
+                <div class="bubble">
+                  Good morning. Systems are operational.<br><br>
+                  <strong>Suggested actions:</strong>
+                  <ul>
+                    <li>3 critical incidents need attention</li>
+                    <li>Ambulance demand is rising in Zone 4</li>
+                    <li>Hospital capacity is low at 2 facilities</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input">
+              <input id="chatInput" placeholder="Ask about incidents, routes, hospitals..." onkeydown="if(event.key==='Enter')sendChat()" />
+              <button onclick="sendChat()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Suggested Queries</h3></div>
+            <div class="panel-body">
+              <div class="suggest">
+                <button onclick="askQuick('Which emergency needs attention first?')">Which emergency needs attention first?</button>
+                <button onclick="askQuick('Which ambulance is closest?')">Which ambulance is closest?</button>
+                <button onclick="askQuick('Why was Route B selected?')">Why was Route B selected?</button>
+                <button onclick="askQuick('Which hospital is best?')">Which hospital is best?</button>
+                <button onclick="askQuick('Show high-risk zones')">Show high-risk zones</button>
+                <button onclick="askQuick('What is the average response time?')">What is the average response time?</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RISK ============ -->
+      <section class="page" id="page-risk">
+        <div class="page-head">
+          <h1>Risk Intelligence</h1>
+          <p>Predictive zone scoring based on traffic patterns, incident history, road hazards, weather, and population density.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>High-Risk Zones</h3>
+              <span class="pill pill-red">Peak 18:00–21:00</span>
+            </div>
+            <div class="panel-body">
+              <div class="zone-row">
+                <span class="z">Zone 01</span>
+                <div class="track"><i data-w="91" style="background:linear-gradient(90deg,#E53935,#B71C1C)"></i></div>
+                <span class="p" style="color:#B71C1C">91%</span>
+              </div>
+              <div class="zone-row">
+                <span class="z">Zone 02</span>
+                <div class="track"><i data-w="78" style="background:linear-gradient(90deg,#EF5350,#C62828)"></i></div>
+                <span class="p" style="color:#C62828">78%</span>
+              </div>
+              <div class="zone-row">
+                <span class="z">Zone 03</span>
+                <div class="track"><i data-w="61" style="background:linear-gradient(90deg,#FB8C00,#E65100)"></i></div>
+                <span class="p" style="color:#E65100">61%</span>
+              </div>
+              <div class="zone-row">
+                <span class="z">Zone 04</span>
+                <div class="track"><i data-w="44" style="background:linear-gradient(90deg,#F59E0B,#B45309)"></i></div>
+                <span class="p" style="color:#B45309">44%</span>
+              </div>
+              <div class="zone-row">
+                <span class="z">Zone 05</span>
+                <div class="track"><i data-w="26" style="background:linear-gradient(90deg,#16A34A,#15803D)"></i></div>
+                <span class="p" style="color:#15803D">26%</span>
+              </div>
+
+              <div style="background:var(--red-soft);border:1px solid #FFCDD2;border-radius:13px;padding:16px;margin-top:22px">
+                <div style="font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#B71C1C;margin-bottom:8px">AI Forecast</div>
+                <p style="font-size:13.5px;line-height:1.65;color:var(--text-2)">
+                  Emergency probability is predicted to <strong style="color:#E53935">increase 24%</strong> between 18:00–21:00 in Zone 01.
+                  Recommend pre-positioning 2 ambulances and 1 police unit near the NH-16 junction.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Contributing Factors</h3></div>
+            <div class="panel-body">
+              <div class="factor"><div class="e">🚗</div><div class="n">Traffic Density</div><div class="w">32%</div></div>
+              <div class="factor"><div class="e">📉</div><div class="n">Historical Incidents</div><div class="w">27%</div></div>
+              <div class="factor"><div class="e">🚧</div><div class="n">Road Hazards</div><div class="w">18%</div></div>
+              <div class="factor"><div class="e">🌧️</div><div class="n">Weather Conditions</div><div class="w">13%</div></div>
+              <div class="factor"><div class="e">👥</div><div class="n">Population Density</div><div class="w">10%</div></div>
+
+              <div class="section-title" style="margin-top:26px">Hourly Risk Heatmap</div>
+              <div class="heat-row">
+                <div class="heat-cell" style="background:#E8F5E9"></div>
+                <div class="heat-cell" style="background:#E8F5E9"></div>
+                <div class="heat-cell" style="background:#FFF8E1"></div>
+                <div class="heat-cell" style="background:#FFF8E1"></div>
+                <div class="heat-cell" style="background:#FFE0B2"></div>
+                <div class="heat-cell" style="background:#FFCCBC"></div>
+                <div class="heat-cell" style="background:#FFCDD2"></div>
+                <div class="heat-cell" style="background:#EF9A9A"></div>
+                <div class="heat-cell" style="background:#E57373"></div>
+                <div class="heat-cell" style="background:#EF5350"></div>
+                <div class="heat-cell" style="background:#E53935"></div>
+                <div class="heat-cell" style="background:#EF5350"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:var(--muted-2);margin-top:7px">
+                <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SIMULATION ============ -->
+      <section class="page" id="page-simulation">
+        <div class="page-head">
+          <h1>Emergency Simulation Lab</h1>
+          <p>Run a controlled multi-vehicle accident scenario and watch the AI pipeline execute end-to-end.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Scenario Configuration</h3>
+              <span class="pill pill-red">MULTI-VEHICLE ACCIDENT</span>
+            </div>
+            <div class="panel-body">
+              <div class="chip-list" style="margin-bottom:22px">
+                <span class="chip">🚑 3 Ambulances</span>
+                <span class="chip">🚓 2 Police Units</span>
+                <span class="chip">🚒 1 Fire Unit</span>
+              </div>
+
+              <div class="sim-steps" id="simSteps">
+                <div class="sim-step" data-step="1">
+                  <div class="n">1</div>
+                  <div><div class="t">Incident detected</div><div class="s">Citizen report + sensor correlation</div></div>
+                </div>
+                <div class="sim-step" data-step="2">
+                  <div class="n">2</div>
+                  <div><div class="t">Severity calculated</div><div class="s">AI scoring: 91/100 — CRITICAL</div></div>
+                </div>
+                <div class="sim-step" data-step="3">
+                  <div class="n">3</div>
+                  <div><div class="t">Resources optimized</div><div class="s">Nearest units matched by capability</div></div>
+                </div>
+                <div class="sim-step" data-step="4">
+                  <div class="n">4</div>
+                  <div><div class="t">Best route selected</div><div class="s">Route B — lowest risk corridor</div></div>
+                </div>
+                <div class="sim-step" data-step="5">
+                  <div class="n">5</div>
+                  <div><div class="t">Hospital selected</div><div class="s">Apollo General — 42% load</div></div>
+                </div>
+                <div class="sim-step" data-step="6">
+                  <div class="n">6</div>
+                  <div><div class="t">Responders dispatched</div><div class="s">All units en route</div></div>
+                </div>
+              </div>
+
+              <button class="btn btn-red ripple" id="simBtn" style="width:100%;margin-top:22px;padding:15px" onclick="runSimulation()">
+                ▶ START SIMULATION
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel" style="margin-bottom:18px">
+              <div class="panel-head"><h3>Simulation Map</h3></div>
+              <div class="panel-body" style="padding:14px">
+                <div class="map-mount tall map-mount-el">
+                  <div class="map-scan"></div>
+                  <div class="radar"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="compare">
+              <div class="compare-card">
+                <div class="k">Baseline Response</div>
+                <div class="v">8.4<span style="font-size:17px">min</span></div>
+                <div class="d">Shortest-route dispatch</div>
+              </div>
+              <div class="compare-card after">
+                <div class="k">AI Optimized</div>
+                <div class="v" id="simResult">—</div>
+                <div class="d">ResQRoute intelligence</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANALYTICS ============ -->
+      <section class="page" id="page-analytics">
+        <div class="page-head">
+          <h1>Emergency Analytics</h1>
+          <p>Performance, distribution, and trend analysis across the last 7 days.</p>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="ico">📋</div>
+            <div class="val"><span data-count="248">0</span></div>
+            <div class="lbl">Incidents This Week</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">🔴</div>
+            <div class="val"><span data-count="31">0</span></div>
+            <div class="lbl">Critical Incidents</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">⏱️</div>
+            <div class="val"><span data-count="8.4" data-dec="1">0</span><small>m</small></div>
+            <div class="lbl">Avg Response</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">✅</div>
+            <div class="val"><span data-count="96.8" data-dec="1">0</span><small>%</small></div>
+            <div class="lbl">Successful Dispatch</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h3>Incidents — Last 7 Days</h3></div>
+            <div class="panel-body">
+              <div class="bars" id="barsChart">
+                <div class="bar-col"><div class="v">32</div><div class="b" data-h="52"></div><div class="l">Mon</div></div>
+                <div class="bar-col"><div class="v">41</div><div class="b" data-h="68"></div><div class="l">Tue</div></div>
+                <div class="bar-col"><div class="v">28</div><div class="b" data-h="46"></div><div class="l">Wed</div></div>
+                <div class="bar-col"><div class="v">47</div><div class="b" data-h="78"></div><div class="l">Thu</div></div>
+                <div class="bar-col"><div class="v">39</div><div class="b" data-h="64"></div><div class="l">Fri</div></div>
+                <div class="bar-col"><div class="v">61</div><div class="b" data-h="100"></div><div class="l">Sat</div></div>
+                <div class="bar-col"><div class="v">52</div><div class="b" data-h="86"></div><div class="l">Sun</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Emergency Type Distribution</h3></div>
+            <div class="panel-body">
+              <div class="donut-wrap">
+                <div class="donut">
+                  <div class="donut-center">248</div>
+                </div>
+                <div class="donut-legend">
+                  <div class="dl-row"><i style="background:var(--red)"></i>Accident<span class="v">92</span></div>
+                  <div class="dl-row"><i style="background:#FB8C00"></i>Medical<span class="v">74</span></div>
+                  <div class="dl-row"><i style="background:var(--warning)"></i>Fire<span class="v">41</span></div>
+                  <div class="dl-row"><i style="background:var(--info)"></i>Flood<span class="v">22</span></div>
+                  <div class="dl-row"><i style="background:var(--success)"></i>Security<span class="v">19</span></div>
+                </div>
+              </div>
+
+              <div class="section-title" style="margin-top:26px">Peak Emergency Window</div>
+              <div style="display:flex;align-items:center;gap:14px">
+                <div style="font-size:30px;font-weight:900;letter-spacing:-.04em;color:#E53935">18:00 — 21:00</div>
+                <span class="pill pill-red">Highest Load</span>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.65">
+                38% of all incidents occur in this 3-hour window. Recommend shifting 25% of standby capacity to evening shifts.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CONTACTS ============ -->
+      <section class="page" id="page-contacts">
+        <div class="page-head">
+          <h1>Emergency Contacts</h1>
+          <p>One-tap dial for critical services. All numbers verified and always available.</p>
+        </div>
+
+        <div class="grid-2b">
+          <div class="panel">
+            <div class="panel-head"><h3>🚨 Emergency Services</h3></div>
+            <div class="panel-body" style="display:flex;flex-direction:column;gap:11px">
+              <div class="contact-card" onclick="toast('ok','Calling Police','Dialing 100...')">
+                <div class="ic">🚓</div>
+                <div><div class="n">Police Control Room</div><div class="num">100</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+              <div class="contact-card" onclick="toast('ok','Calling Ambulance','Dialing 108...')">
+                <div class="ic">🚑</div>
+                <div><div class="n">Ambulance Services</div><div class="num">108</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+              <div class="contact-card" onclick="toast('ok','Calling Fire','Dialing 101...')">
+                <div class="ic">🚒</div>
+                <div><div class="n">Fire & Rescue</div><div class="num">101</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+              <div class="contact-card" onclick="toast('ok','Calling Disaster Cell','Dialing 108...')">
+                <div class="ic">🌊</div>
+                <div><div class="n">Disaster Response</div><div class="num">1088</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>🏥 Nearby Hospitals</h3></div>
+            <div class="panel-body" style="display:flex;flex-direction:column;gap:11px">
+              <div class="contact-card" onclick="toast('ok','Calling Apollo','Connecting to Apollo General...')">
+                <div class="ic">🏥</div>
+                <div><div class="n">Apollo General</div><div class="num">+91 40 2360 7777</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+              <div class="contact-card" onclick="toast('ok','Calling Govt General','Connecting...')">
+                <div class="ic">🏥</div>
+                <div><div class="n">Government General</div><div class="num">+91 40 2460 0146</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+              <div class="contact-card" onclick="toast('ok','Calling City Care','Connecting...')">
+                <div class="ic">🏥</div>
+                <div><div class="n">City Care Medical</div><div class="num">+91 40 4455 5555</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+              <div class="contact-card" onclick="toast('ok','Calling Trauma Line','Connecting to 24/7 trauma hotline...')">
+                <div class="ic">🩺</div>
+                <div><div class="n">24/7 Trauma Hotline</div><div class="num">1800 425 1111</div></div>
+                <div class="btn-call">📞</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ALERTS ============ -->
+      <section class="page" id="page-alerts">
+        <div class="page-head">
+          <h1>Safety Alerts</h1>
+          <p>Active advisories and warnings issued by the ResQRoute intelligence network.</p>
+        </div>
+
+        <div class="alert-card critical">
+          <div class="head">
+            <span>🚨</span>
+            <span class="p">High-risk junction — Main Junction</span>
+            <span class="pill pill-red">Critical</span>
+          </div>
+          <p>Severe congestion detected at Main Junction. AI recommends avoiding this corridor for emergency routing until 21:00.</p>
+          <div class="meta">Issued 12 minutes ago · Zone 01</div>
+        </div>
+
+        <div class="alert-card warning">
+          <div class="head">
+            <span>⚠️</span>
+            <span class="p">Water-logging on Ring Road underpass</span>
+            <span class="pill pill-amber">Warning</span>
+          </div>
+          <p>Minor flooding reported on the Ring Road underpass. Expect delays for heavy vehicles. Emergency vehicles may proceed with caution.</p>
+          <div class="meta">Issued 34 minutes ago · Zone 03</div>
+        </div>
+
+        <div class="alert-card warning">
+          <div class="head">
+            <span>🔥</span>
+            <span class="p">Industrial fire smoke advisory</span>
+            <span class="pill pill-amber">Warning</span>
+          </div>
+          <p>Smoke plume detected in Industrial Area. Fire units on scene. Nearby residents advised to keep windows closed until further notice.</p>
+          <div class="meta">Issued 1 hour ago · Industrial Area</div>
+        </div>
+
+        <div class="alert-card info">
+          <div class="head">
+            <span>ℹ️</span>
+            <span class="p">Ambulance surge expected 18:00–21:00</span>
+            <span class="pill pill-blue">Info</span>
+          </div>
+          <p>AI prediction: 18% increase in ambulance demand during the evening peak. Additional units pre-positioned in Zone 04.</p>
+          <div class="meta">Issued 2 hours ago · Network-wide</div>
+        </div>
+
+        <div class="alert-card info">
+          <div class="head">
+            <span>🌤️</span>
+            <span class="p">Weather watch — light rain expected</span>
+            <span class="pill pill-blue">Info</span>
+          </div>
+          <p>Light rain forecast between 17:00–19:00. Wet surface conditions may increase minor accident probability by 12%.</p>
+          <div class="meta">Issued 3 hours ago · Network-wide</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     NOTIFICATION PANEL
+     ============================================================ -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-head">
+    <h4>Notifications</h4>
+    <button style="font-size:11px;font-weight:700;color:var(--red)" onclick="toast('ok','All marked read','3 notifications cleared')">Mark all read</button>
+  </div>
+  <div class="notif-item">
+    <div class="ic red">🚨</div>
+    <div class="tx"><strong>RQ-1048 escalated to Critical</strong><span>Multi-vehicle accident on NH-16</span></div>
+    <div class="tm">now</div>
+  </div>
+  <div class="notif-item">
+    <div class="ic amber">⚠️</div>
+    <div class="tx"><strong>Zone 4 demand rising</strong><span>Ambulance demand may increase 18%</span></div>
+    <div class="tm">4m</div>
+  </div>
+  <div class="notif-item">
+    <div class="ic blue">🏥</div>
+    <div class="tx"><strong>Apollo General accepting</strong><span>Load at 42% · 6 ICU beds free</span></div>
+    <div class="tm">12m</div>
+  </div>
+  <div class="notif-item">
+    <div class="ic green">✅</div>
+    <div class="tx"><strong>RQ-1044 resolved</strong><span>Flood response completed</span></div>
+    <div class="tm">1h</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     COMMAND PALETTE
+     ============================================================ -->
+<div class="cmd-bg" id="cmdBg" onclick="if(event.target===this)closeCmd()">
+  <div class="cmd">
+    <div class="cmd-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="cmdInput" placeholder="Type a command or search..." oninput="filterCmd()" />
+      <kbd>ESC</kbd>
+    </div>
+    <div class="cmd-list" id="cmdList">
+      <div class="cmd-sec">Quick actions</div>
+      <div class="cmd-item" onclick="cmdGo('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Go to Dashboard
+        <span class="k">G D</span>
+      </div>
+      <div class="cmd-item" onclick="cmdGo('report')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+        Report Emergency
+        <span class="k">G R</span>
+      </div>
+      <div class="cmd-item" onclick="cmdGo('analysis')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        Open AI Analysis
+        <span class="k">G A</span>
+      </div>
+      <div class="cmd-item" onclick="cmdGo('routes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h5a4 4 0 000-8H9a4 4 0 010-8h5"/></svg>
+        Smart Routes
+      </div>
+      <div class="cmd-item" onclick="cmdGo('command')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Command Center
+      </div>
+      <div class="cmd-item" onclick="cmdGo('simulation')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+        Simulation Lab
+      </div>
+
+      <div class="cmd-sec">AI Actions</div>
+      <div class="cmd-item" onclick="closeCmd();sendChat();askQuick('Which emergency needs attention first?')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Ask Copilot: priority incident
+      </div>
+      <div class="cmd-item" onclick="closeCmd();go('simulation');setTimeout(runSimulation,300)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+        Run simulation now
+      </div>
+      <div class="cmd-item" onclick="closeCmd();toggleTheme()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+        Toggle theme
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     INCIDENT DRAWER
+     ============================================================ -->
+<div class="drawer-bg" id="drawerBg" onclick="if(event.target===this)closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div>
+      <h3 id="drawerTitle">Incident Details</h3>
+      <div style="font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.05em;margin-top:3px;font-family:'JetBrains Mono',monospace" id="drawerId">RQ-1048</div>
+    </div>
+    <button class="icon-btn" onclick="closeDrawer()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:20px">
+      <span class="pill pill-red" id="drawerSev">Critical</span>
+      <span class="pill pill-blue">En Route</span>
+      <span class="pill pill-gray" id="drawerTime">Reported 2m ago</span>
+    </div>
+
+    <div class="section-title">Location</div>
+    <p style="font-size:13.5px;color:var(--text-2);line-height:1.65;margin-bottom:22px" id="drawerLoc">
+      NH-16, near the railway station underpass. Zone 01.
+    </p>
+
+    <div class="section-title">AI Summary</div>
+    <p style="font-size:13.5px;color:var(--text-2);line-height:1.65;margin-bottom:22px">
+      Multi-vehicle collision with one vehicle overturned. Estimated 3 victims. Severity scored <strong>91/100</strong>.
+      Two ambulances and one police unit dispatched via Route B (lowest risk corridor).
+    </p>
+
+    <div class="section-title">Recommended Response</div>
+    <div class="response-grid" style="margin-bottom:22px">
+      <div class="response-card"><div class="e">🚑</div><div class="t">Ambulance</div><div class="s">A-07, A-11</div></div>
+      <div class="response-card"><div class="e">🚓</div><div class="t">Police</div><div class="s">P-12</div></div>
+      <div class="response-card"><div class="e">🏥</div><div class="t">Hospital</div><div class="s">Apollo General</div></div>
+    </div>
+
+    <div class="section-title">Timeline</div>
+    <div class="timeline">
+      <div class="tl-item done"><div class="tm">10:42</div><div class="tx">Reported by citizen</div></div>
+      <div class="tl-item done"><div class="tm">10:43</div><div class="tx">AI analysis complete</div></div>
+      <div class="tl-item done"><div class="tm">10:44</div><div class="tx">Units assigned</div></div>
+      <div class="tl-item now"><div class="tm">NOW</div><div class="tx">Ambulance approaching — ETA 4 min</div></div>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn btn-ghost ripple dark" style="flex:1" onclick="closeDrawer()">Close</button>
+    <button class="btn btn-red ripple" style="flex:1" onclick="toast('ok','Escalated','Incident escalated to senior ops')">Escalate</button>
+  </div>
+</aside>
+
+<!-- AI ORB -->
+<div class="ai-orb" id="aiOrb" onclick="openCopilotFromOrb()" title="Ask ResQ AI">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/>
+  </svg>
+</div>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<script>
+/* ============================================================
+   MAP RENDERER
+   ============================================================ */
+function mapSVG(i){
+  const g = 'g'+i, r = 'r'+i;
+  return `
+  <svg viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice" class="mapsvg">
+    <defs>
+      <pattern id="${g}" width="32" height="32" patternUnits="userSpaceOnUse">
+        <path d="M32 0H0V32" fill="none" stroke="#EEF1F4" stroke-width="1" opacity=".6"/>
+      </pattern>
+      <linearGradient id="${r}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#E53935"/>
+        <stop offset="100%" stop-color="#B71C1C"/>
+      </linearGradient>
+    </defs>
+    <rect width="800" height="480" fill="#FBFCFD"/>
+    <rect width="800" height="480" fill="url(#${g})"/>
+
+    <rect x="40" y="40" width="100" height="60" rx="8" fill="#F1F4F7"/>
+    <rect x="215" y="40" width="130" height="60" rx="8" fill="#F1F4F7"/>
+    <rect x="415" y="40" width="110" height="60" rx="8" fill="#F1F4F7"/>
+    <rect x="690" y="40" width="80" height="60" rx="8" fill="#F1F4F7"/>
+    <rect x="40" y="270" width="100" height="70" rx="8" fill="#F1F4F7"/>
+    <rect x="215" y="180" width="130" height="60" rx="8" fill="#F1F4F7"/>
+    <rect x="415" y="270" width="110" height="70" rx="8" fill="#F1F4F7"/>
+    <rect x="690" y="180" width="80" height="60" rx="8" fill="#F1F4F7"/>
+    <rect x="215" y="360" width="130" height="80" rx="8" fill="#F1F4F7"/>
+    <rect x="690" y="380" width="80" height="60" rx="8" fill="#F1F4F7"/>
+    <rect x="420" y="180" width="110" height="60" rx="14" fill="#E8F5E9"/>
+
+    <path d="M0 130H800" stroke="#E4E8EC" stroke-width="24"/>
+    <path d="M0 230H800" stroke="#E4E8EC" stroke-width="20"/>
+    <path d="M0 330H800" stroke="#E4E8EC" stroke-width="24"/>
+    <path d="M0 410H800" stroke="#E4E8EC" stroke-width="18"/>
+    <path d="M170 0V480" stroke="#E4E8EC" stroke-width="24"/>
+    <path d="M380 0V480" stroke="#E4E8EC" stroke-width="20"/>
+    <path d="M560 0V480" stroke="#E4E8EC" stroke-width="20"/>
+    <path d="M650 0V480" stroke="#E4E8EC" stroke-width="24"/>
+
+    <path d="M0 130H800" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="12 14" opacity=".9"/>
+    <path d="M0 330H800" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="12 14" opacity=".9"/>
+    <path d="M170 0V480" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="12 14" opacity=".9"/>
+    <path d="M650 0V480" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="12 14" opacity=".9"/>
+
+    <path d="M170 130 V230 H560 V330 H650" fill="none" stroke="#CBD5E1" stroke-width="7"
+          stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="13 11" opacity=".85"/>
+
+    <path id="routeAI${i}" d="M170 130 V410 H650 V330"
+          fill="none" stroke="url(#${r})" stroke-width="7"
+          stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="1000" stroke-dashoffset="1000">
+      <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="2.2s" fill="freeze"/>
+    </path>
+
+    <g transform="translate(560,230)">
+      <circle r="19" fill="#FEF3C7" opacity=".9"/>
+      <circle r="13" fill="#F59E0B"/>
+      <path d="M0-6v6M0 3v.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(170,130)">
+      <circle r="30" fill="#E53935" opacity=".14">
+        <animate attributeName="r" values="20;36;20" dur="2.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".26;0;.26" dur="2.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="14" fill="#E53935" stroke="#fff" stroke-width="3.5"/>
+      <circle r="4.5" fill="#fff"/>
+    </g>
+
+    <g transform="translate(650,330)">
+      <circle r="28" fill="#16A34A" opacity=".14">
+        <animate attributeName="r" values="18;32;18" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="15" fill="#16A34A" stroke="#fff" stroke-width="3.5"/>
+      <path d="M0-6v12M-6 0h12" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+    </g>
+
+    <g>
+      <circle r="9" fill="#2563EB" stroke="#fff" stroke-width="3">
+        <animateMotion dur="7s" repeatCount="indefinite" rotate="auto">
+          <mpath href="#routeAI${i}"/>
+        </animateMotion>
+      </circle>
+    </g>
+
+    <text x="170" y="98" font-family="Inter, sans-serif" font-size="12" font-weight="800" fill="#B71C1C" text-anchor="middle">INCIDENT</text>
+    <text x="650" y="300" font-family="Inter, sans-serif" font-size="12" font-weight="800" fill="#15803D" text-anchor="middle">HOSPITAL</text>
+    <text x="560" y="200" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#B45309" text-anchor="middle">MAIN JUNCTION</text>
+  </svg>`;
+}
+
+document.querySelectorAll('.map-mount-el').forEach((el, i) => {
+  el.insertAdjacentHTML('afterbegin', mapSVG(i));
+});
+
+/* ============================================================
+   PAGE META + NAV
+   ============================================================ */
+const PAGE_META = {
+  dashboard:{t:'Operations Dashboard', c:'Real-time emergency overview'},
+  report:{t:'Report Emergency', c:'Citizen SOS & incident intake'},
+  analysis:{t:'AI Emergency Analysis', c:'Incident #RQ-1048 · Severity assessment'},
+  routes:{t:'Smart Route Intelligence', c:'Risk-weighted emergency routing'},
+  hospitals:{t:'Hospital Intelligence', c:'Capacity, ICU & trauma matching'},
+  tracking:{t:'Live Incident Tracking', c:'Incident #RQ-1048 · Unit position'},
+  command:{t:'Command Center', c:'Full operational picture'},
+  copilot:{t:'ResQ AI Copilot', c:'Emergency operations assistant'},
+  risk:{t:'Risk Intelligence', c:'Predictive zone scoring'},
+  simulation:{t:'Simulation Lab', c:'Scenario modelling & benchmarking'},
+  analytics:{t:'Emergency Analytics', c:'Performance & trend analysis'},
+  contacts:{t:'Emergency Contacts', c:'One-tap dial for critical services'},
+  alerts:{t:'Safety Alerts', c:'Active advisories & warnings'}
+};
+
+function go(page){
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-'+page));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+
+  const meta = PAGE_META[page];
+  if(meta){
+    document.getElementById('topTitle').textContent = meta.t;
+    document.getElementById('topCrumb').textContent = meta.c;
+  }
+
+  document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  runCounters();
+  runBars();
+  runMeters();
+
+  if(page === 'analysis') animateGauge();
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => go(btn.dataset.page));
+});
+
+/* ============================================================
+   LANDING ↔ APP
+   ============================================================ */
+function enterApp(page){
+  const landing = document.getElementById('landing');
+  const app = document.getElementById('app');
+  landing.classList.add('hide');
+  app.classList.add('show');
+  setTimeout(() => go(page || 'dashboard'), 120);
+}
+function showLanding(){
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('landing').classList.remove('hide');
+}
+
+/* ============================================================
+   COUNTERS / BARS / METERS
+   ============================================================ */
+function runCounters(){
+  document.querySelectorAll('.page.active [data-count]').forEach(el => {
+    if(el.dataset.done) return;
+    el.dataset.done = '1';
+    const target = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.dec || 0);
+    const dur = 1300;
+    const start = performance.now();
+    (function step(t){
+      const p = Math.min((t - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(dec);
+      if(p < 1) requestAnimationFrame(step);
+      else el.textContent = target.toFixed(dec);
+    })(start);
+  });
+}
+function runBars(){
+  document.querySelectorAll('.page.active .bar-col .b').forEach(b => {
+    b.style.height = '0px';
+    setTimeout(() => { b.style.height = b.dataset.h + '%'; }, 80);
+  });
+}
+function runMeters(){
+  document.querySelectorAll('.page.active .meter i, .page.active .zone-row .track i').forEach(i => {
+    const w = i.dataset.w || i.style.width.replace('%','');
+    i.style.width = '0%';
+    setTimeout(() => { i.style.width = w + '%'; }, 90);
+  });
+}
+
+/* ============================================================
+   GAUGE
+   ============================================================ */
+function animateGauge(){
+  const target = 91;
+  const val = document.getElementById('sevVal');
+  const gauge = document.getElementById('sevGauge');
+  if(!val || !gauge) return;
+
+  const dur = 1400;
+  const start = performance.now();
+  (function step(t){
+    const p = Math.min((t - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const cur = target * eased;
+    val.textContent = Math.round(cur);
+    gauge.style.background =
+      `conic-gradient(#E53935 0turn ${(cur/100).toFixed(3)}turn, var(--border-2) ${(cur/100).toFixed(3)}turn 1turn)`;
+    if(p < 1) requestAnimationFrame(step);
+  })(start);
+}
+
+/* ============================================================
+   SOS HOLD
+   ============================================================ */
+(function(){
+  const btn = document.getElementById('sosBtn');
+  const fill = document.getElementById('sosFill');
+  if(!btn) return;
+  let raf = null, startTime = 0;
+  const HOLD = 2000;
+
+  function begin(e){
+    e.preventDefault();
+    startTime = performance.now();
+    btn.style.animation = 'none';
+    cancelAnimationFrame(raf);
+    (function loop(t){
+      const p = Math.min((t - startTime) / HOLD, 1);
+      fill.style.height = (p * 100) + '%';
+      if(p < 1) raf = requestAnimationFrame(loop);
+      else fire();
+    })(startTime);
+  }
+  function end(){
+    cancelAnimationFrame(raf);
+    fill.style.height = '0%';
+    btn.style.animation = 'sosPulse 2.6s ease-out infinite';
+  }
+  function fire(){
+    fill.style.height = '100%';
+    toast('ok','SOS ACTIVATED','Location shared · 2 ambulances dispatched to your position');
+    confettiBurst();
+    setTimeout(() => { end(); go('analysis'); }, 700);
+  }
+
+  btn.addEventListener('pointerdown', begin);
+  btn.addEventListener('pointerup', end);
+  btn.addEventListener('pointerleave', end);
+  btn.addEventListener('pointercancel', end);
+})();
+
+/* ============================================================
+   TYPE CHIPS
+   ============================================================ */
+document.querySelectorAll('.type-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    toast('info', chip.dataset.type + ' selected', 'Emergency type set for this report');
+  });
+});
+
+/* VOICE TOGGLE */
+function toggleVoice(){
+  const btn = document.getElementById('voiceBtn');
+  btn.classList.toggle('recording');
+  if(btn.classList.contains('recording')){
+    toast('info','Voice input active','Listening... speak your emergency');
+    setTimeout(() => {
+      btn.classList.remove('recording');
+      toast('ok','Voice captured','"There is an accident near the railway station"');
+      const ta = document.querySelector('#page-report textarea');
+      if(ta) ta.value = 'Accident near the railway station underpass. Multiple vehicles involved.';
+    }, 3000);
+  }
+}
+
+/* ============================================================
+   ROUTE PICK
+   ============================================================ */
+function pickRoute(card, route){
+  document.querySelectorAll('.route-card').forEach(c => c.classList.remove('best'));
+  card.classList.add('best');
+  toast('ok','Route ' + route + ' selected','Dispatch will use this corridor');
+}
+
+/* HOSPITAL PICK */
+function selectHospital(name){
+  toast('ok','Hospital selected', name + ' notified · Trauma team on standby');
+}
+
+/* ============================================================
+   DISPATCH + CONFETTI
+   ============================================================ */
+function dispatch(){
+  toast('ok','Response dispatched','2 ambulances · 1 police unit en route to NH-16');
+  confettiBurst();
+  setTimeout(() => go('tracking'), 350);
+}
+
+function submitReport(){
+  toast('ok','Emergency reported','Incident #RQ-1048 created · AI analysis running');
+  confettiBurst();
+  setTimeout(() => go('analysis'), 400);
+}
+
+function confettiBurst(){
+  const wrap = document.getElementById('confetti');
+  const colors = ['#E53935','#B71C1C','#F59E0B','#16A34A','#2563EB','#FFFFFF'];
+  for(let i=0; i<60; i++){
+    const el = document.createElement('div');
+    el.className = 'cf';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (1.4 + Math.random()*1.6) + 's';
+    el.style.animationDelay = (Math.random()*0.25) + 's';
+    el.style.borderRadius = Math.random() > .5 ? '2px' : '50%';
+    if(Math.random() > .5) el.style.width = '6px';
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 3200);
+  }
+}
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+function toast(type, title, msg){
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type === 'ok' ? 'ok' : type === 'info' ? 'info' : '');
+  const icon = type === 'ok' ? '✅' : type === 'info' ? 'ℹ️' : '🚨';
+  el.innerHTML = `<div class="ic">${icon}</div><div class="tx"><strong>${title}</strong>${msg||''}</div>`;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity .3s, transform .3s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(30px)';
+    setTimeout(() => el.remove(), 320);
+  }, 4200);
+}
+
+/* ============================================================
+   COPILOT
+   ============================================================ */
+const KNOWLEDGE = [
+  {keys:['attention','first','priority','critical','urgent'],
+    a:`<strong>Incident #RQ-1048</strong> requires immediate attention.<br><br>
+       It's a multi-vehicle accident on NH-16 with a severity score of <span class="hl">91/100</span> and an estimated 3 victims.
+       Two ambulances and one police unit are already en route via Route B.<br><br>
+       <strong>Next:</strong> confirm trauma bay availability at Apollo General.`},
+  {keys:['ambulance','closest','nearest','unit'],
+    a:`The closest available unit is <strong>Ambulance A-07</strong>, currently 1.8 km from the incident with an ETA of <span class="hl">4 minutes</span>.<br><br>
+       Backup: <strong>A-11</strong> (3.4 km, 7 min) and <strong>A-14</strong> (4.1 km, 9 min).`},
+  {keys:['route b','why','route','selected','corridor'],
+    a:`<strong>Route B was selected</strong> because it optimizes for survivability, not distance:<br><br>
+       <ul>
+         <li>2 minutes faster than the shortest route</li>
+         <li>Avoids the congested Main Junction (hazard score 82%)</li>
+         <li>Bypasses a reported road obstruction on NH-16</li>
+         <li>Road condition rated <strong>Good</strong> end-to-end</li>
+       </ul>
+       Overall risk score: <span class="hl">18/100</span> — the lowest of all three corridors.`},
+  {keys:['hospital','best','facility','icu','bed'],
+    a:`<strong>Apollo General Hospital</strong> is the optimal receiving facility:<br><br>
+       <ul>
+         <li>Current load: <strong>42%</strong> (lowest)</li>
+         <li>ICU beds available: <strong>6</strong></li>
+         <li>General beds: <strong>18</strong></li>
+         <li>Travel ETA from incident: <strong>9 min</strong></li>
+       </ul>
+       City Care has more beds (24) but a longer ETA of 14 minutes.`},
+  {keys:['risk','zone','high-risk','hotspot','forecast'],
+    a:`<strong>Top high-risk zones right now:</strong><br><br>
+       <ul>
+         <li>Zone 01 — <span class="hl">91%</span> risk (traffic + junction congestion)</li>
+         <li>Zone 02 — <span class="hl">78%</span> risk (historical incident density)</li>
+         <li>Zone 03 — <span class="hl">61%</span> risk (road hazards)</li>
+       </ul>
+       AI forecast: emergency probability rises <strong>24%</strong> between 18:00–21:00 in Zone 01.`},
+  {keys:['response time','average','avg','performance','speed'],
+    a:`Current average emergency response time is <strong>8.4 minutes</strong> — down 0.6 minutes from last week.<br><br>
+       With ResQRoute AI routing active, simulations show a reduction to <span class="hl">6.1 minutes</span> (−27%).<br>
+       Dispatch success rate: <strong>96.8%</strong>.`},
+  {keys:['incident','active','how many','status'],
+    a:`There are currently <strong>12 active incidents</strong>:<br><br>
+       <ul>
+         <li>1 Critical (RQ-1048 — Accident, NH-16)</li>
+         <li>2 High (RQ-1047 Medical, RQ-1046 Fire)</li>
+         <li>3 Medium</li>
+         <li>6 Low</li>
+       </ul>
+       34 units are available and 18 hospitals are accepting.`}
+];
+
+function addMsg(role, html){
+  const body = document.getElementById('chatBody');
+  const el = document.createElement('div');
+  el.className = 'msg ' + role;
+  el.innerHTML = `<div class="av">${role === 'ai' ? 'AI' : 'MK'}</div><div class="bubble">${html}</div>`;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+}
+
+function addTyping(){
+  const body = document.getElementById('chatBody');
+  const el = document.createElement('div');
+  el.className = 'msg ai'; el.id = 'typingMsg';
+  el.innerHTML = `<div class="av">AI</div><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div>`;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+}
+function removeTyping(){
+  const t = document.getElementById('typingMsg');
+  if(t) t.remove();
+}
+
+function askQuick(q){
+  document.getElementById('chatInput').value = q;
+  sendChat();
+}
+
+function sendChat(){
+  const input = document.getElementById('chatInput');
+  const q = input.value.trim();
+  if(!q) return;
+  addMsg('user', q);
+  input.value = '';
+  addTyping();
+
+  setTimeout(() => {
+    removeTyping();
+    const lower = q.toLowerCase();
+    let found = null;
+    for(const item of KNOWLEDGE){
+      if(item.keys.some(k => lower.includes(k))){ found = item; break; }
+    }
+    const reply = found
+      ? found.a
+      : `I can help with live incidents, route selection, hospital matching, unit availability, and risk forecasting.<br><br>
+         Try asking: <em>"Which emergency needs attention first?"</em> or <em>"Why was Route B selected?"</em>`;
+    addMsg('ai', reply);
+  }, 800);
+}
+
+function openCopilotFromOrb(){
+  if(!document.getElementById('app').classList.contains('show')){
+    enterApp('copilot');
+  } else {
+    go('copilot');
+  }
+  setTimeout(() => {
+    const inp = document.getElementById('chatInput');
+    if(inp) inp.focus();
+  }, 500);
+}
+
+/* ============================================================
+   SIMULATION
+   ============================================================ */
+let simRunning = false;
+function runSimulation(){
+  if(simRunning) return;
+  simRunning = true;
+
+  const btn = document.getElementById('simBtn');
+  const steps = document.querySelectorAll('#simSteps .sim-step');
+  const result = document.getElementById('simResult');
+
+  btn.disabled = true;
+  btn.style.opacity = '.6';
+  btn.textContent = '⏳ RUNNING...';
+  result.textContent = '—';
+  result.style.color = '';
+
+  steps.forEach(s => s.classList.remove('on','done'));
+
+  let i = 0;
+  const tick = () => {
+    if(i > 0) steps[i-1].classList.replace('on','done');
+    if(i >= steps.length){
+      setTimeout(() => {
+        result.textContent = '6.1';
+        result.style.color = '#E53935';
+        toast('ok','Simulation complete','Response time improved 8.4 min → 6.1 min (−27%)');
+        confettiBurst();
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.textContent = '▶ RUN AGAIN';
+        simRunning = false;
+      }, 420);
+      return;
+    }
+    steps[i].classList.add('on');
+    i++;
+    setTimeout(tick, 780);
+  };
+  tick();
+}
+
+/* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+function toggleTheme(){
+  const html = document.documentElement;
+  const cur = html.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('rqr-theme', next);
+  const icon = document.getElementById('themeIcon');
+  if(icon){
+    icon.innerHTML = next === 'dark'
+      ? '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>'
+      : '<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>';
+  }
+  toast('info','Theme changed', next === 'dark' ? 'Dark mode enabled' : 'Light mode enabled');
+}
+
+/* ============================================================
+   NOTIFICATION PANEL
+   ============================================================ */
+function toggleNotif(e){
+  e.stopPropagation();
+  const p = document.getElementById('notifPanel');
+  p.classList.toggle('show');
+  const bell = document.getElementById('bellBtn');
+  bell.classList.add('shake');
+  setTimeout(() => bell.classList.remove('shake'), 620);
+}
+document.addEventListener('click', e => {
+  const p = document.getElementById('notifPanel');
+  if(p.classList.contains('show') && !p.contains(e.target) && !e.target.closest('#bellBtn')){
+    p.classList.remove('show');
+  }
+});
+
+/* ============================================================
+   COMMAND PALETTE
+   ============================================================ */
+function openCmd(){
+  document.getElementById('cmdBg').classList.add('show');
+  setTimeout(() => document.getElementById('cmdInput').focus(), 60);
+}
+function closeCmd(){
+  document.getElementById('cmdBg').classList.remove('show');
+  document.getElementById('cmdInput').value = '';
+  filterCmd();
+}
+function cmdGo(page){
+  closeCmd();
+  go(page);
+}
+function filterCmd(){
+  const q = document.getElementById('cmdInput').value.toLowerCase();
+  document.querySelectorAll('#cmdList .cmd-item').forEach(item => {
+    const txt = item.textContent.toLowerCase();
+    item.style.display = txt.includes(q) ? '' : 'none';
+  });
+}
+
+/* ============================================================
+   INCIDENT DRAWER
+   ============================================================ */
+function openIncident(id, title, loc, sev){
+  document.getElementById('drawerId').textContent = id;
+  document.getElementById('drawerTitle').textContent = title;
+  document.getElementById('drawerLoc').textContent = loc;
+  const sevEl = document.getElementById('drawerSev');
+  sevEl.textContent = sev;
+  sevEl.className = 'pill ' + (sev === 'Critical' ? 'pill-red' : sev === 'High' ? 'pill-amber' : sev === 'Medium' ? 'pill-blue' : 'pill-green');
+  document.getElementById('drawerBg').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+function closeDrawer(){
+  document.getElementById('drawerBg').classList.remove('show');
+  document.getElementById('drawer').classList.remove('show');
+}
+
+/* ============================================================
+   CLOCK + WEATHER
+   ============================================================ */
+function tickClock(){
+  const now = new Date();
+  const t = now.toLocaleTimeString('en-GB', {hour12:false});
+  const d = now.toLocaleDateString('en-US', {weekday:'short', day:'2-digit', month:'short'});
+  const te = document.getElementById('clockTime');
+  const de = document.getElementById('clockDate');
+  if(te) te.textContent = t;
+  if(de) de.textContent = d;
+}
+setInterval(tickClock, 1000); tickClock();
+
+/* ============================================================
+   BOOT SEQUENCE
+   ============================================================ */
+(function boot(){
+  const bar = document.getElementById('bootBar');
+  const status = document.getElementById('bootStatus');
+  const screen = document.getElementById('bootScreen');
+  const steps = [
+    'Initializing AI routing engine…',
+    'Connecting to emergency network…',
+    'Loading live incident feed…',
+    'Calibrating risk model…',
+    'Syncing hospital telemetry…',
+    'Ready.'
+  ];
+  let p = 0, s = 0;
+  const int = setInterval(() => {
+    p += 16 + Math.random()*14;
+    if(p > 100) p = 100;
+    bar.style.width = p + '%';
+    if(p >= 100){
+      clearInterval(int);
+      setTimeout(() => screen.classList.add('hide'), 500);
+      return;
+    }
+    const idx = Math.min(Math.floor(p/100 * steps.length), steps.length-1);
+    if(idx !== s){ s = idx; status.textContent = steps[s]; }
+  }, 260);
+})();
+
+/* ============================================================
+   RIPPLE EFFECT
+   ============================================================ */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.ripple');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const rp = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  rp.className = 'rp';
+  rp.style.width = rp.style.height = size + 'px';
+  rp.style.left = (e.clientX - rect.left - size/2) + 'px';
+  rp.style.top = (e.clientY - rect.top - size/2) + 'px';
+  btn.appendChild(rp);
+  setTimeout(() => rp.remove(), 700);
+});
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if(en.isIntersecting){
+      en.target.classList.add('reveal');
+      io.unobserve(en.target);
+    }
+  });
+}, {threshold:.12});
+document.querySelectorAll('.feature').forEach(f => io.observe(f));
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+document.addEventListener('keydown', e => {
+  // Cmd/Ctrl + K opens command palette
+  if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){
+    e.preventDefault();
+    document.getElementById('cmdBg').classList.contains('show') ? closeCmd() : openCmd();
+    return;
+  }
+  // Esc closes overlays
+  if(e.key === 'Escape'){
+    closeCmd(); closeDrawer();
+    document.getElementById('notifPanel').classList.remove('show');
+  }
+  // Arrow navigation in command palette
+  if(document.getElementById('cmdBg').classList.contains('show') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')){
+    e.preventDefault();
+    const items = [...document.querySelectorAll('#cmdList .cmd-item')].filter(i => i.style.display !== 'none');
+    const cur = items.findIndex(i => i.classList.contains('active'));
+    let next = e.key === 'ArrowDown' ? cur + 1 : cur - 1;
+    if(next < 0) next = items.length - 1;
+    if(next >= items.length) next = 0;
+    items.forEach(i => i.classList.remove('active'));
+    items[next].classList.add('active');
+    items[next].scrollIntoView({block:'nearest'});
+  }
+  if(e.key === 'Enter' && document.getElementById('cmdBg').classList.contains('show')){
+    const active = document.querySelector('#cmdList .cmd-item.active');
+    if(active) active.click();
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('load', () => {
+  // Restore theme
+  const saved = localStorage.getItem('rqr-theme');
+  if(saved === 'dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    const icon = document.getElementById('themeIcon');
+    if(icon) icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>';
+  }
+
+  runCounters();
+  runBars();
+  runMeters();
+
+  // Landing counters
+  document.querySelectorAll('#landing [data-count]').forEach(el => {
+    const target = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.dec || 0);
+    const dur = 1600;
+    const start = performance.now();
+    (function step(t){
+      const p = Math.min((t - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(dec);
+      if(p < 1) requestAnimationFrame(step);
+    })(start);
+  });
+
+  // Simulate periodic notification bell shake
+  setInterval(() => {
+    const bell = document.getElementById('bellBtn');
+    if(!bell) return;
+    bell.classList.add('shake');
+    setTimeout(() => bell.classList.remove('shake'), 620);
+  }, 18000);
+});
+</script>
+</body>
+</html>
